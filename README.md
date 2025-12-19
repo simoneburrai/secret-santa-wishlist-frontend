@@ -1,50 +1,96 @@
-# Welcome to your Expo app 👋
+-## Obiettivo
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Progettare e sviluppare un'applicazione web dinamica basata su API e che utilizzi il database per la persistenza dei dati.
 
-## Get started
+## Argomenti da ripassare
 
-1. Install dependencies
+- Concetto di Rest API
+- Operazioni CRUD sulle risorse
+- Database relazionali
+- Entità e relazioni
+- Form e validazione dati
 
-   ```bash
-   npm install
-   ```
+## Consegna
 
-2. Start the app
+<aside>
+📚
 
-   ```bash
-   npx expo start
-   ```
+Nome repo:
 
-In the output, you'll find options to open the app in a
+- **secret-santa-wishlist-frontend**
+- **secret-santa-wishlist-backend**
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+Immagina un'applicazione pensata per organizzare il Secret Santa tra amici, colleghi o familiari: ogni partecipante può creare la propria wishlist natalizia, aggiungendo regali con nome, immagine, link, prezzo e priorità. 
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Gli altri partecipanti, accedendo tramite un link segreto e univoco, possono consultare la lista e prenotare un regalo da acquistare, senza che il proprietario venga a sapere chi lo ha scelto. 
 
-## Get a fresh project
+In questo modo si evitano doppioni e si preserva l’effetto sorpresa tipico del Secret Santa!
 
-When you're ready, run:
+</aside>
 
-```bash
-npm run reset-project
-```
+### Requisiti
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+1. **Wishlist pubblica e gestione regali**
+    - L’utente può creare una wishlist personale e aggiungere, modificare, eliminare e visualizzare i regali finché la lista non viene pubblicata.
+    - Ogni regalo ha: nome, link, prezzo, priorità (1-5), note opzionali.
+2. **Pubblicazione e generazione link segreto**
+    - Solo dopo la pubblicazione, la wishlist diventa pubblica e viene generato un link segreto e univoco (es. UUID o token randomico) da condividere.
+    - Prima della pubblicazione, la wishlist è modificabile liberamente dall’utente.
+3. **Accesso tramite link pubblico**
+    - Chi riceve il link può visualizzare la wishlist in sola lettura e prenotare/acquistare un regalo.
+    - Il proprietario della wishlist non può vedere chi ha prenotato o acquistato i regali.
+4. **Gestione prenotazioni**
+- I regali presenti nella wishlist pubblicata possono essere prenotati da chiunque abbia il link segreto.
+- Al momento della prenotazione, il visitatore può aggiungere un messaggio pubblico che sarà visibile nell’interfaccia della lista (ad esempio "Babbo Natale è passato di qui!").
+- Il proprietario della wishlist non potrà vedere l’identità di chi ha prenotato il regalo, ma solo il messaggio associato.
+1. **Salvataggio bozza wishlist**
+- Consenti all’utente di salvare la wishlist in fase di compilazione come bozza nel browser tramite localStorage.
+- In questo modo, la lista potrà essere recuperata e modificata anche dopo un aggiornamento o la chiusura accidentale della pagina, fino alla pubblicazione definitiva.
 
-## Learn more
+### UX/UI
 
-To learn more about developing your project with Expo, look at the following resources:
+L’interfaccia è progettata mobile first, ottimizzata per l’uso e la condivisione da smartphone e tablet, ma adattabile anche a desktop.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- **Homepage:** schermata iniziale dell’applicazione
+    - visualizza gli oggetti della wishlist attualmente in modifica
+    - permette di accedere al form per aggiungere un nuovo regalo
+    - include un pulsante per pubblicare la wishlist
+- **Pagina di aggiunta regalo:**
+    - consente l’inserimento di un nuovo regalo nella wishlist
+    - campi obbligatori: nome, immagine, link, prezzo, priorità
+- **Pagina della wishlist pubblica:**
+    - mostra l’elenco dei regali disponibili nella lista
+    - ogni regalo può essere prenotato tramite apposito pulsante
+    - opzionalmente, chi prenota può lasciare un messaggio (ad esempio tramite modale o campo a comparsa)
+    - è consigliato richiedere una conferma all’utente prima di completare la prenotazione
 
-## Join the community
+### Opzioni di consegna
 
-Join our community of developers creating universal apps.
+1. **Solo Frontend + API Rest in Express**
+2. **Frontend + Backoffice + Api REST**
+    - Sviluppa anche una semplice area utente per gestire e visualizzare le proprie wishlist
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Bonus
+
+🚀 **Bonus 1 - Liste salvate:**
+Crea una pagina dedicata dove l’utente può vedere sia le proprie wishlist pubblicate** che quelle di altri che ha salvato come preferite (ad esempio tramite un pulsante “Salva tra i preferiti” presente nella pagina pubblica di una wishlist). Da questa pagina l’utente può accedere rapidamente alle wishlist preferite, rimuoverle dai preferiti o visualizzarle.
+
+🚀 **Bonus 2 - Condivisione:**
+Implementa una funzionalità che permetta all’utente di condividere facilmente la propria wishlist pubblicata tramite la [Web Share API](https://developer.mozilla.org/it/docs/Web/API/Navigator/share) del browser. Aggiungi un pulsante “Condividi” nella pagina della wishlist pubblica che, se il browser lo supporta, apre il pannello di condivisione nativo (es. per inviare il link via WhatsApp, Telegram, email, ecc.). In caso di browser non supportato, mostra un messaggio o copia il link negli appunti.
+
+🚀 **Bonus 3 - Suggerimento regalo:**
+Durante la compilazione della wishlist, aggiungi un pulsante “Suggerisci un regalo” che apre una modale con un regalo selezionato casualmente tra tutti quelli presenti nel database delle wishlist. L’utente può scegliere se ignorare il suggerimento oppure aggiungerlo direttamente alla propria lista.
+
+### ⚠️ Note Importanti
+
+- Progetta lo schema del database e le API prima di iniziare
+- Gestisci la validazione sia lato client che server
+- Implementa gestione degli errori appropriata e casi limite
+- Includi il file [**README.md**](http://readme.md/) in cui:
+    - Descrivi la struttura del tuo progetto
+    - Spiega le scelte implementative
+    - Documenta eventuali bonus realizzati
+
+## Reference e Documentazione
+
+- [Web Share API – MDN](https://developer.mozilla.org/it/docs/Web/API/Navigator/share)
