@@ -1,5 +1,6 @@
 import type { JSX } from "react"
 import { NavLink, Outlet } from "react-router-dom"
+import Footer from "./Footer"
 
 export default function Default() :JSX.Element{
    return <>
@@ -16,6 +17,6 @@ export default function Default() :JSX.Element{
         </nav>
     </header>
     <main><Outlet/></main>
-    <footer></footer>
+    <footer><Footer/></footer>
     </>
 }
