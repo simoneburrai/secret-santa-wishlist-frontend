@@ -3,7 +3,7 @@ import { NavLink, Outlet } from "react-router-dom"
 import Footer from "./Footer"
 
 export default function Default() :JSX.Element{
-   return <>
+   return <div className="min-h-screen bg-xmas-bg text-xmas-text transition-colors duration-500">
     <header>
         <nav>
             <NavLink to="/">Home</NavLink>
@@ -18,5 +18,5 @@ export default function Default() :JSX.Element{
     </header>
     <main><Outlet/></main>
     <footer><Footer/></footer>
-    </>
+    </div>
 }
