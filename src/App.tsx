@@ -8,30 +8,30 @@ import Register from "./pages/Register";
 import CreateWishlist from "./pages/CreateWishlist";
 import Wishlist from "./pages/Wishlist";
 import Default from "./components/Default";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
 function App() {
 
-  return <BrowserRouter>
-    <Routes>
-      <Route path="/" element={<Default/>}>
-      
-        <Route path="/" element={<Home/>}/>
+  return <ThemeProvider>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Default/>}>
 
-        <Route path="/login" element={<Login/>}/>
-        <Route path="/register" element={<Register/>}/>
+          <Route path="/" element={<Home/>}/>
+          <Route path="/login" element={<Login/>}/>
+          <Route path="/register" element={<Register/>}/>
+          <Route path="/settings" element={<Settings/>}/>
+          <Route path="/wishlists/view/:token" element={<Wishlist/>}/>
+          <Route path="/wishlists/me" element={<MyWihslists/>}/>
+          <Route path="/wishlists/create" element={<CreateWishlist />} />
+          <Route path="/wishlists/me/:id" element={<Wishlist/>}/>
+          <Route path="/*" element={<NotFound/>}/>
 
-        <Route path="/settings" element={<Settings/>}/>
+        </Route>
 
-        <Route path="/wishlists/view/:token" element={<Wishlist/>}/>
-        <Route path="/wishlists/me" element={<MyWihslists/>}/>
-        <Route path="/wishlists/create" element={<CreateWishlist />} />
-        <Route path="/wishlists/me/:id" element={<Wishlist/>}/>
-        <Route path="/*" element={<NotFound/>}/>
-      
-      </Route>
-      
-    </Routes>
-  </BrowserRouter>
+      </Routes>
+    </BrowserRouter>
+  </ThemeProvider>
 }
 
 export default App
