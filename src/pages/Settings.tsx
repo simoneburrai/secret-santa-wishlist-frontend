@@ -11,8 +11,8 @@ export default function Settings() : JSX.Element{
     return <div>
         <h1>Settings</h1>
         <div>
-            <button onClick={toggleTheme} disabled={theme === "light"} className="btn-xmas">LIGHT</button>
-            <button onClick={toggleTheme} disabled={theme === "dark"} className="btn-primary"  >DARK</button>
+            <button onClick={toggleTheme} disabled={theme === "light"} className="btn-santa">LIGHT</button>
+            <button onClick={toggleTheme} disabled={theme === "dark"} className="btn-forest"  >DARK</button>
         </div>
     </div>
 }

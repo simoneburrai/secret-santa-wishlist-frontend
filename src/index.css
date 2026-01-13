@@ -1,6 +1,12 @@
 @import "tailwindcss";
 
-/* Logica Dark Mode manuale per v4 */
+@theme {
+  --color-primary: var(--primary);
+  --color-secondary: var(--secondary);
+  --color-xmas-bg: var(--xmas-bg);
+  --color-xmas-text: var(--xmas-text);
+}
+
 :root {
   --primary: #d32f2f;
   --secondary: #2e7d32;
@@ -15,21 +21,25 @@
   --xmas-text: #f3f4f6;
 }
 
-/* Colleghiamo le variabili alle utility di Tailwind */
-@layer utilities {
-  .bg-primary {
-    background-color: var(--primary);
-  }
-  .text-primary {
-    color: var(--primary);
-  }
-  .bg-secondary {
-    background-color: var(--secondary);
-  }
-  .bg-xmas-bg {
-    background-color: var(--xmas-bg);
-  }
-  .text-xmas-text {
-    color: var(--xmas-text);
-  }
+/* In v4, usa @utility per registrare le classi nel motore di scansione */
+@utility btn-christmas {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-weight: 700;
+  text-transform: uppercase;
+  transition: all 0.3s ease;
+}
+
+/* Invece di fare @apply .btn-christmas (che dà errore), 
+   ripeti le utility o usa una classe CSS standard */
+@utility btn-santa {
+  @apply btn-christmas bg-primary text-white shadow-md active:scale-95 hover:brightness-110 disabled:opacity-50;
+}
+
+@utility btn-forest {
+  @apply btn-christmas bg-secondary text-white shadow-md active:scale-95 hover:brightness-110 disabled:opacity-50;
 }
