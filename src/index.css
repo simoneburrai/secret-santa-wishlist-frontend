@@ -8,7 +8,7 @@
 }
 
 :root {
-  --primary: #d32f2f;
+  --primary: #ff6c6c;
   --secondary: #2e7d32;
   --xmas-bg: #f9fafb;
   --xmas-text: #1f2937;
@@ -42,4 +42,8 @@
 
 @utility btn-forest {
   @apply btn-christmas bg-secondary text-white shadow-md active:scale-95 hover:brightness-110 disabled:opacity-50;
+}
+
+@utility nav-link {
+  @apply py-2 px-3 m-2 flex border-2 rounded-2xl hover:cursor-pointer hover:bg-red-500;
 }
