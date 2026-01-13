@@ -10,7 +10,7 @@ export default function Login(): JSX.Element {
         <div className="flex flex-col gap-1">
           <label className="font-semibold" htmlFor="email">Email</label>
           <input 
-            className="p-3 rounded-xl border border-secondary/30 bg-transparent focus:outline-none focus:ring-2 focus:ring-primary" 
+            className="p-3 rounded-xl border border-primary/30 bg-transparent focus:outline-none focus:ring-2 focus:ring-primary" 
             type="email" 
             name="email" 
             id="email" 
@@ -21,7 +21,7 @@ export default function Login(): JSX.Element {
         <div className="flex flex-col gap-1">
           <label className="font-semibold" htmlFor="password">Password</label>
           <input 
-            className="p-3 rounded-xl border border-secondary/30 bg-transparent focus:outline-none focus:ring-2 focus:ring-primary" 
+            className="p-3 rounded-xl border border-primary/30 bg-transparent focus:outline-none focus:ring-2 focus:ring-primary" 
             type="password" 
             name="password" 
             id="password" 

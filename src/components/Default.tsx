@@ -3,32 +3,58 @@ import { NavLink, Outlet } from "react-router-dom"
 import Footer from "./Footer"
 import { Gift, LogIn, Search, Settings, UserPlus } from "lucide-react"
 
-export default function Default() : JSX.Element {
-   return (
+export default function Default(): JSX.Element {
+  return (
     <div className="flex flex-col min-h-screen bg-xmas-bg text-xmas-text transition-colors duration-500">
-        <header className="p-5 bg-primary shadow-md">
-            <nav className="flex justify-between items-center max-w-7xl mx-auto">
-                <div>            
-                    <NavLink to="/">
-                        <h3 className="text-2xl font-extrabold hover:scale-105 transition-transform">
-                            🎅 Secret Santa Wishlist
-                        </h3>
-                    </NavLink>
-                </div>
-                <div className="flex font-bold gap-4">
-                    <button className="nav-link"><Search /></button>
-                    <NavLink className="nav-link flex gap-2" to="/wishlist/me"><Gift/> My Wishlists</NavLink>
-                    <NavLink className="nav-link flex gap-2" to="/settings"><Settings/></NavLink>
-                    <NavLink className="nav-link flex gap-2" to="/login"><LogIn /> Sign in</NavLink>
-                    <NavLink className="nav-link flex gap-2" to="/register"><UserPlus/> Sign up</NavLink>
-                </div>
-            </nav>
-        </header>
-        <main className="flex-1 flex flex-col p-6">
-            <Outlet />
-        </main>
+      <header className="sticky top-0 z-50 p-5 bg-primary shadow-lg">
+  
+        <nav className="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto gap-4 md:gap-0">
+          
+          <div className="text-center md:text-left">
+            <NavLink to="/">
+              <h3 className="text-xl sm:text-2xl font-extrabold hover:scale-105 transition-transform text-white">
+                🎅 <span className="hidden sm:inline">Secret Santa Wishlist</span>
+                <span className="sm:hidden text-lg">SS Wishlist</span>
+              </h3>
+            </NavLink>
+          </div>
 
-        <Footer />
+          {/* Nav Links: Sotto il logo su mobile, a destra da md in poi */}
+          <div className="flex font-bold gap-3 sm:gap-6 items-center">
+            
+            {/* Search - solo icona sempre */}
+            <button className="nav-link text-white"><Search size={20}/></button>
+            
+            {/* Link con testo a comparsa */}
+            <NavLink className="nav-link flex items-center gap-1 md:gap-2 text-white" to="/wishlists/me">
+              <Gift size={20}/> 
+              <span className="hidden lg:block">My Wishlists</span>
+            </NavLink>
+
+            <NavLink className="nav-link flex items-center gap-1 md:gap-2 text-white" to="/settings">
+              <Settings size={20}/> 
+              <span className="hidden lg:block">Settings</span>
+            </NavLink>
+
+            <NavLink className="nav-link flex items-center gap-1 md:gap-2 text-white" to="/login">
+              <LogIn size={20}/> 
+              <span className="hidden lg:block">Sign in</span>
+            </NavLink>
+
+            <NavLink className="nav-link flex items-center gap-1 md:gap-2 text-white" to="/register">
+              <UserPlus size={20}/> 
+              <span className="hidden lg:block">Sign up</span>
+            </NavLink>
+            
+          </div>
+        </nav>
+      </header>
+
+      <main className="flex-1 flex flex-col p-6">
+        <Outlet />
+      </main>
+      
+      <Footer />
     </div>
-   )
+  );
 }

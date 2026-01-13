@@ -45,5 +45,5 @@
 }
 
 @utility nav-link {
-  @apply py-2 px-3 m-2 flex border-2 rounded-2xl hover:cursor-pointer hover:bg-red-500;
+  @apply py-2 px-2 md:px-3 flex border-2 rounded-2xl hover:cursor-pointer hover:bg-red-500;
 }
