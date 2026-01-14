@@ -1,10 +1,59 @@
 import type { JSX } from "react"
 import { Link } from "react-router-dom";
+import { useState } from "react";
+import { z } from "zod";
+
+const loginSchema = z.object({
+  email: z
+    .string()
+    .min(1, "L'email è obbligatoria")
+    .email("Formato email non valido"),
+  password: z
+    .string()
+    .min(6, "La password deve avere almeno 6 caratteri")
+});
+
 
 export default function Login(): JSX.Element {
+
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+
+  const [error, setError] =useState({
+    email: "",
+    password: ""
+  });
+
+  const validate = () => {
+  // Puliamo gli errori precedenti prima di validare
+  setError({ email: "", password: "" });
+
+  const result = loginSchema.safeParse(formData);
+
+  if (!result.success) {
+  
+    const formattedErrors: any = {};
+    
+    result.error.issues.forEach((issue) => {
+      formattedErrors[issue.path[0]] = issue.message;
+    });
+
+    setError(prev => ({ ...prev, ...formattedErrors }));
+    return false;
+  }
+
+  return true; // Tutto ok!
+};
+
+  const handleSubmit = ()=>{
+
+  };
+
   return (
     <div className="flex-1 flex justify-center items-center">
-      <form className="flex flex-col gap-4 p-8 border-2 border-primary rounded-3xl bg-white/5 backdrop-blur-sm w-full max-w-md shadow-xl">
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4 p-8 border-2 border-primary rounded-3xl bg-white/5 backdrop-blur-sm w-full max-w-md shadow-xl">
         <h2 className="text-2xl font-bold text-center text-primary mb-4">Bentornato!</h2>
         
         <div className="flex flex-col gap-1">
@@ -15,7 +64,11 @@ export default function Login(): JSX.Element {
             name="email" 
             id="email" 
             placeholder="babbonatale@polo.nord"
+            value={formData.email}
+            onChange={(e) => setFormData({...formData, email: e.target.value})}
+            onBlur={validate}
           />
+          {error.email && <span className="text-xs text-primary font-bold">{error.email}</span>}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -26,7 +79,11 @@ export default function Login(): JSX.Element {
             name="password" 
             id="password" 
             placeholder="••••••••"
+            value={formData.password}
+            onChange={(e) => setFormData({...formData, password: e.target.value})}
+            onBlur={validate}
           />
+          {error.password && <span className="text-xs text-primary font-bold">{error.password}</span>}
         </div>
 
         <button type="submit" className="btn-santa mt-4 w-full hover:cursor-pointer">
