@@ -22,7 +22,7 @@ export default function Login(): JSX.Element {
     password: ""
   });
 
-  const [dataError, setDataError] =useState({
+  const [dataError, setDataError] = useState({
     email: "",
     password: ""
   });
@@ -33,7 +33,7 @@ export default function Login(): JSX.Element {
 
   const validate = () => {
   // Puliamo gli errori precedenti prima di validare
-  setError({ email: "", password: "" });
+  setDataError({ email: "", password: "" });
 
   const result = loginSchema.safeParse(formData);
 
@@ -45,11 +45,11 @@ export default function Login(): JSX.Element {
       formattedErrors[issue.path[0]] = issue.message;
     });
 
-    setError(prev => ({ ...prev, ...formattedErrors }));
+    setDataError(prev => ({ ...prev, ...formattedErrors }));
     return false;
   }
 
-  return true; // Tutto ok!
+  return true; 
 };
 
 
@@ -88,7 +88,7 @@ export default function Login(): JSX.Element {
             onChange={(e) => setFormData({...formData, email: e.target.value})}
             onBlur={validate}
           />
-          {error.email && <span className="text-xs text-primary font-bold">{error.email}</span>}
+          {dataError.email && <span className="text-xs text-primary font-bold">{dataError.email}</span>}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -103,7 +103,7 @@ export default function Login(): JSX.Element {
             onChange={(e) => setFormData({...formData, password: e.target.value})}
             onBlur={validate}
           />
-          {error.password && <span className="text-xs text-primary font-bold">{error.password}</span>}
+          {dataError.password && <span className="text-xs text-primary font-bold">{dataError.password}</span>}
         </div>
 
         <button type="submit" className="btn-santa mt-4 w-full hover:cursor-pointer">
