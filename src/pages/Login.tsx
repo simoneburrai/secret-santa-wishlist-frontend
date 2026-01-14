@@ -2,6 +2,7 @@ import type { JSX } from "react"
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { z } from "zod";
+import authService from "../services/authService";
 
 const loginSchema = z.object({
   email: z
@@ -21,10 +22,14 @@ export default function Login(): JSX.Element {
     password: ""
   });
 
-  const [error, setError] =useState({
+  const [dataError, setDataError] =useState({
     email: "",
     password: ""
   });
+
+  const [error, setError] = useState("");
+
+
 
   const validate = () => {
   // Puliamo gli errori precedenti prima di validare
@@ -47,14 +52,21 @@ export default function Login(): JSX.Element {
   return true; // Tutto ok!
 };
 
-async function sendData(URL){
-    const result = await axios.
-}
 
- const handleSubmit = (e: React.FormEvent) => {
+
+ const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (validate()) {
-      
+      try {
+        const user = await authService.login(formData);
+        console.log(user);
+      } catch (error: unknown) {
+          if (error instanceof Error) {
+            setError(error.message);
+          }else {
+            setError("Si È verificato un errore imprevisto");
+          }
+      }
     }
     return;
   };
