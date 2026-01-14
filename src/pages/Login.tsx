@@ -47,8 +47,16 @@ export default function Login(): JSX.Element {
   return true; // Tutto ok!
 };
 
-  const handleSubmit = ()=>{
+async function sendData(URL){
+    const result = await axios.
+}
 
+ const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (validate()) {
+      
+    }
+    return;
   };
 
   return (
