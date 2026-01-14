@@ -1,6 +1,5 @@
 import type { JSX } from "react"
 import { NavLink, Outlet } from "react-router-dom"
-import Footer from "./Footer"
 import { Gift, LogIn, Search, Settings, UserPlus } from "lucide-react"
 
 export default function Default(): JSX.Element {
@@ -14,18 +13,15 @@ export default function Default(): JSX.Element {
             <NavLink to="/">
               <h3 className="text-xl sm:text-2xl font-extrabold hover:scale-105 transition-transform text-white">
                 🎅 <span className="hidden sm:inline">Secret Santa Wishlist</span>
-                <span className="sm:hidden text-lg">SS Wishlist</span>
+                <span className="sm:hidden text-lg">Secret Santa</span>
               </h3>
             </NavLink>
           </div>
 
-          {/* Nav Links: Sotto il logo su mobile, a destra da md in poi */}
           <div className="flex font-bold gap-3 sm:gap-6 items-center">
             
-            {/* Search - solo icona sempre */}
             <button className="nav-link text-white"><Search size={20}/></button>
             
-            {/* Link con testo a comparsa */}
             <NavLink className="nav-link flex items-center gap-1 md:gap-2 text-white" to="/wishlists/me">
               <Gift size={20}/> 
               <span className="hidden lg:block">My Wishlists</span>
@@ -53,8 +49,6 @@ export default function Default(): JSX.Element {
       <main className="flex-1 flex flex-col p-6">
         <Outlet />
       </main>
-      
-      <Footer />
     </div>
   );
 }
