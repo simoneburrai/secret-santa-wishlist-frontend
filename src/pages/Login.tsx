@@ -2,7 +2,7 @@ import type { JSX } from "react"
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { z } from "zod";
-import authService from "../services/authService";
+import { useAuth } from "../contexts/AuthContext";
 
 const loginSchema = z.object({
   email: z
@@ -16,6 +16,8 @@ const loginSchema = z.object({
 
 
 export default function Login(): JSX.Element {
+
+  const {login} = useAuth();
 
   const [formData, setFormData] = useState({
     email: "",
@@ -58,7 +60,7 @@ export default function Login(): JSX.Element {
     e.preventDefault();
     if (validate()) {
       try {
-        const user = await authService.login(formData);
+        const user = await login(formData);
         console.log(user);
       } catch (error: unknown) {
           if (error instanceof Error) {
@@ -77,6 +79,11 @@ export default function Login(): JSX.Element {
         <h2 className="text-2xl font-bold text-center text-primary mb-4">Bentornato!</h2>
         
         <div className="flex flex-col gap-1">
+          {error && (
+            <div className="bg-primary/20 border border-primary p-3 rounded-xl text-center mb-2">
+              <p className="text-sm font-bold text-primary">{error}</p>
+            </div>
+          )}
           <label className="font-semibold" htmlFor="email">Email</label>
           <input 
             className="p-3 rounded-xl border border-primary/30 bg-transparent focus:outline-none focus:ring-2 focus:ring-primary" 
