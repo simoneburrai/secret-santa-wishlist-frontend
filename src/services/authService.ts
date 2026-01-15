@@ -17,18 +17,18 @@ const catchFunction = (error: unknown): never => {
 
 const authService = {
     login: async (credentials: {email: string, password: string}) => {
-        try {
-            const { data } = await apiClient.post<{ user: any, msg?: string }>("/login", credentials);
-      
-            if (!data.user) {
-                throw new Error(data.msg || "Errore sconosciuto");
-            }
-            return data.user;
-        } catch (error) {
-            // Non serve il return qui perché catchFunction lancia un throw
-            catchFunction(error);
+    try {
+        // Tipizziamo la risposta includendo il token
+        const { data } = await apiClient.post<{ user: any, token: string, msg?: string }>("/login", credentials);
+  
+        if (!data.user || !data.token) {
+            throw new Error(data.msg || "Dati ricevuti incompleti");
         }
-    },
+        return data; // Restituiamo tutto l'oggetto { user, token }
+    } catch (error) {
+        catchFunction(error);
+    }
+},
     register: async (credentials: {name: string, email: string, password: string}) => {
         try {
             const { data } = await apiClient.post<{ user: any, msg?: string }>("/register", credentials);
