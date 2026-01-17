@@ -43,7 +43,7 @@ export default function Register() : JSX.Element{
         <button type="submit" className="btn-santa mt-4 w-full hover:cursor-pointer">
           Registrati
         </button>
-        <div className="text-center">Hai già un accont? <Link to="/login" className="font-bold hover:underline hover:scale-105">Clicca qui</Link></div>
+        <div className="text-center">Hai già un accont? <Link to="/login" className="font-bold hover:underline hover:scale-105 text-secondary">Clicca qui</Link></div>
       </form>
     </div>
   );
