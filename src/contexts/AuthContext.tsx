@@ -36,9 +36,12 @@ function AuthProvider(props: { children: ReactNode }) {
 
   const register = async (credentials: {name: string, email: string, password: string}) => {
     const data = await authService.register(credentials);
-    localStorage.setItem("token", data.token);
-    setIsAuthenticated(true);
-    setUser(data.user);
+    if (data && data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        setIsAuthenticated(true);
+        setUser(data.user);
+    }
   };
 
   const logout = () => {
