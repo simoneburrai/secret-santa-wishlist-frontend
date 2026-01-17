@@ -30,17 +30,17 @@ const authService = {
     }
 },
     register: async (credentials: {name: string, email: string, password: string}) => {
-        try {
-            const { data } = await apiClient.post<{ user: any, msg?: string }>("/register", credentials);
-      
-            if (!data.user) {
-                throw new Error(data.msg || "Errore sconosciuto");
-            }
-            return data.user;
-        } catch (error) {
-            catchFunction(error);
+    try {
+        const { data } = await apiClient.post<{ user: any, token?: string, msg?: string }>("/register", credentials);
+  
+        if (!data.user) {
+            throw new Error(data.msg || "Errore sconosciuto");
         }
+        return data; 
+    } catch (error) {
+        catchFunction(error);
     }
+}
 }
 
 export default authService;
