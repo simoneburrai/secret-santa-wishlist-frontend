@@ -22,9 +22,10 @@ export const wishlistService = {
     },
 
 
-    createWishlist: async (wishlistData: { name: string; gifts: any[] }) => {
+    createWishlist: async (formData: FormData) => { // Cambiato in FormData
         try {
-            const { data } = await apiClient.post("/wishlists", wishlistData);
+            // apiClient userà automaticamente 'multipart/form-data'
+            const { data } = await apiClient.post("/wishlists", formData);
             return data;
         } catch (error) {
             handleApiError(error);

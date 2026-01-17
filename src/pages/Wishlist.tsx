@@ -1,74 +1,87 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { wishlistService } from "../services/wishlistService";
-import { Gift, PackageOpen } from "lucide-react";
+import { useAuth } from "../contexts/AuthContext";
+import { SquarePen, Trash2, Heart, Gift } from "lucide-react";
 
-export default function PublicWishlist() {
-  // 1. Cattura il token dall'URL (es. /wishlists/public/:token)
-  const { token } = useParams<{ token: string }>();
+export default function Wishlist() {
+    const { token } = useParams<{ token: string }>();
+    const { user } = useAuth(); // Recuperiamo l'utente loggato
+    const navigate = useNavigate();
+    
+    const [wishlist, setWishlist] = useState<any>(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchWishlist = async () => {
+            try {
+                if (token) {
+                    const data = await wishlistService.getPublicWishlist(token);
+                    setWishlist(data);
+                }
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchWishlist();
+    }, [token]);
+
+    if (loading) return <div className="text-center p-10">Caricamento... ❄️</div>;
+    if (!wishlist) return <div className="text-center p-10">Wishlist non trovata.</div>;
+
   
-  const [wishlist, setWishlist] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+    const isOwner = user && Number(user.id) === Number(wishlist.owner_id);
 
-  useEffect(() => {
-    const fetchPublicData = async () => {
-      if (!token) return;
-      
-      try {
-        setLoading(true);
-        // 2. Chiamata al servizio (che non richiede token JWT nell'header)
-        const data = await wishlistService.getPublicWishlist(token);
-        setWishlist(data);
-      } catch (err: any) {
-        setError(err.message || "Impossibile trovare questa wishlist.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPublicData();
-  }, [token]);
-
-  if (loading) return <div className="text-center mt-20 text-white">Caricamento regali... 🎁</div>;
-  if (error) return <div className="text-center mt-20 text-primary font-bold">{error}</div>;
-
-  return (
-    <div className="max-w-4xl mx-auto p-6">
-      <header className="text-center mb-10">
-        <h1 className="text-4xl font-black text-primary flex items-center justify-center gap-3">
-          <PackageOpen size={40} /> {wishlist?.name}
-        </h1>
-        <p className="text-gray-600 mt-2">Ecco cosa vorrebbe ricevere il tuo amico!</p>
-      </header>
-
-      <div className="grid gap-6 sm:grid-cols-2">
-        {wishlist?.gifts.map((gift: any, index: number) => (
-          <div key={index} className="bg-white p-6 rounded-3xl shadow-xl border-2 border-primary/10 flex flex-col justify-between">
-            <div>
-              <h3 className="text-xl font-bold text-gray-800">{gift.name}</h3>
-              {gift.price && <p className="text-primary font-bold">{gift.price} €</p>}
-              {gift.notes && <p className="text-sm text-gray-500 mt-2 italic">"{gift.notes}"</p>}
+    return (
+        <div className="max-w-4xl mx-auto p-4">
+            <div className="flex justify-between items-center mb-8 border-b-2 border-primary pb-4">
+                <h1 className="text-4xl font-bold text-primary">{wishlist.name}</h1>
+                
+                <div className="flex gap-2">
+                    {isOwner ? (
+                        <>
+                            {/* Se è il proprietario, mostra Edit e Delete */}
+                            <button 
+                                onClick={() => navigate(`/wishlists/edit/${wishlist.id}`)}
+                                className="btn-santa flex items-center gap-2"
+                            >
+                                <SquarePen size={20} /> Modifica
+                            </button>
+                            <button 
+                                className="p-2 text-red-500 hover:bg-red-50 rounded-xl"
+                                onClick={() => {/* logica delete */}}
+                            >
+                                <Trash2 size={24} />
+                            </button>
+                        </>
+                    ) : (
+                        /* Se è un visitatore, mostra il tasto "Aggiungi ai Preferiti" */
+                        <button className="flex items-center gap-2 bg-secondary text-white px-4 py-2 rounded-xl hover:opacity-90">
+                            <Heart size={20} /> Salva nei Preferiti
+                        </button>
+                    )}
+                </div>
             </div>
-            
-            <div className="mt-4 flex items-center justify-between">
-              <span className={`px-3 py-1 rounded-full text-xs font-bold ${gift.priority === 1 ? 'bg-red-100 text-red-600' : 'bg-blue-100 text-blue-600'}`}>
-                Priorità: {gift.priority}
-              </span>
-              {gift.link && (
-                <a 
-                  href={gift.link} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="flex items-center gap-1 text-secondary font-bold hover:underline"
-                >
-                  Vedi link <Gift size={16} />
-                </a>
-              )}
+
+            {/* Lista dei Regali */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {wishlist.gifts.map((gift: any) => (
+                    <div key={gift.id} className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100 flex gap-4">
+                        {gift.image && (
+                            <img src={gift.image} alt={gift.name} className="w-24 h-24 object-cover rounded-xl" />
+                        )}
+                        <div className="flex-1">
+                            <h3 className="font-bold text-xl">{gift.name}</h3>
+                            <p className="text-secondary font-semibold">{gift.price} €</p>
+                            {gift.link && (
+                                <a href={gift.link} target="_blank" className="text-xs text-blue-500 underline">Link al regalo</a>
+                            )}
+                        </div>
+                    </div>
+                ))}
             </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+        </div>
+    );
 }

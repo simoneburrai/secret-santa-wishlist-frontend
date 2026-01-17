@@ -1,12 +1,14 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import type { ReactNode } from "react";
 import authService from "../services/authService";
+import type { User } from "../types/wishlists";
 
 interface AuthContextType {
   isAuthenticated: boolean;
   login: (credentials: { email: string; password: string; }) => Promise<any>,
   logout: ()=> void,
   register: (credentials: { name: string; email: string; password: string; })=> Promise<any>
+  user: User
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,15 +36,23 @@ function AuthProvider(props: { children: ReactNode }) {
     }
   };
 
-  const register = async (credentials: {name: string, email: string, password: string}) => {
-    const data = await authService.register(credentials);
-    if (data && data.token) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        setIsAuthenticated(true);
-        setUser(data.user);
+const register = async (credentials: {name: string, email: string, password: string}) => {
+    try {
+        const data = await authService.register(credentials);
+        
+        if (data && data.token) { // <-- Qui data.token è undefined perché il backend non lo inviava
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("user", JSON.stringify(data.user));
+            setIsAuthenticated(true);
+            setUser(data.user);
+        } else {
+            throw new Error("Dati di registrazione non validi");
+        }
+    } catch (error) {
+        console.error("Errore durante la registrazione:", error);
+        throw error;
     }
-  };
+};
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -52,6 +62,7 @@ function AuthProvider(props: { children: ReactNode }) {
 
   const value: AuthContextType = {
     isAuthenticated,
+    user,
     login,
     logout,
     register

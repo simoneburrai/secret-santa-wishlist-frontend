@@ -17,7 +17,7 @@ export default function SearchModal({ isOpen, onClose }: SearchModalProps): JSX.
     e.preventDefault();
     if (token.trim()) {
       onClose(); // Chiudi la modale
-      navigate(`/wishlists/public/${token.trim()}`); // Naviga alla rotta pubblica
+      navigate(`/wishlists/view/${token.trim()}`); // Naviga alla rotta pubblica
     }
   };
 

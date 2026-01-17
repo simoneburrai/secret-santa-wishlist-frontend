@@ -25,35 +25,40 @@ export default function CreateWishlist() {
     setGifts(updatedGifts);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setError("");
-  
-  if (!name.trim()) return setError("Il titolo della wishlist è obbligatorio");
-  
-  for (const [index, gift] of gifts.entries()) {
-    if (!gift.name.trim()) return setError(`Il nome del regalo #${index + 1} è obbligatorio`);
-    if (!gift.price) return setError(`Il prezzo del regalo #${index + 1} è obbligatorio`);
-  }
+const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
 
-  const wishlistData = {
-    name,
-    gifts: gifts.map((gift) => ({
-      name: gift.name,
-      price: gift.price,
-      priority: gift.priority,
-      link: gift.link,
-      notes: gift.notes,
-      image: gift.image
-    }))
-  };
+    // 1. Creiamo l'oggetto FormData
+    const formData = new FormData();
+    
+    // 2. Aggiungiamo il nome della wishlist
+    formData.append("name", name);
 
-  try {
-    await wishlistService.createWishlist(wishlistData);
-    navigate("/wishlists/me");
-  } catch (err: any) {
-    setError(err.message);
-  }
+    // 3. Prepariamo i dati testuali dei regali come stringa JSON
+    // Questo permette al backend di ricevere l'array strutturato
+    formData.append("gifts", JSON.stringify(gifts.map(gift => ({
+        name: gift.name,
+        price: gift.price,
+        priority: gift.priority,
+        link: gift.link,
+        notes: gift.notes
+    }))));
+
+    // 4. Aggiungiamo i file immagine separatamente con chiavi univoche
+    gifts.forEach((gift, index) => {
+        if (gift.image) {
+            formData.append(`gift_image_${index}`, gift.image);
+        }
+    });
+
+    try {
+        // Ora passiamo l'oggetto formData, che è quello che il servizio si aspetta
+        await wishlistService.createWishlist(formData);
+        navigate("/wishlists/me");
+    } catch (err: any) {
+        setError(err.message);
+    }
 };
 
   return (
