@@ -1,8 +1,12 @@
 import { Gift, Share2, MousePointerClick, Heart } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import StepCard from "../components/StepCard";
+import { useAuth } from "../contexts/AuthContext";
 
 export default function Home() {
+
+  const {isAuthenticated} = useAuth();
+
   return (
     <div className="flex flex-col gap-16 py-10">
       {/* --- HERO SECTION --- */}
@@ -13,7 +17,7 @@ export default function Home() {
         <p className="text-xl max-w-2xl opacity-80 font-medium">
           Crea la tua lista dei desideri, condividila con gli amici e rendi lo scambio dei regali magico e senza stress.
         </p>
-        <NavLink to="/wishlists/create" className="btn-santa text-lg px-10 py-4 shadow-2xl">
+        <NavLink to={isAuthenticated ? "/wishlists/create" : "/login" } className="btn-santa text-lg px-10 py-4 shadow-2xl">
           Inizia Ora
         </NavLink>
       </section>

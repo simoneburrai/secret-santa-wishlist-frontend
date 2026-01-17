@@ -26,35 +26,35 @@ export default function CreateWishlist() {
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!name.trim()) return setError("Il titolo della wishlist è obbligatorio");
-    
-    for (const [index, gift] of gifts.entries()) {
-      if (!gift.name.trim()) return setError(`Il nome del regalo #${index + 1} è obbligatorio`);
-      if (!gift.price) return setError(`Il prezzo del regalo #${index + 1} è obbligatorio`);
-    }
+  e.preventDefault();
+  setError("");
+  
+  if (!name.trim()) return setError("Il titolo della wishlist è obbligatorio");
+  
+  for (const [index, gift] of gifts.entries()) {
+    if (!gift.name.trim()) return setError(`Il nome del regalo #${index + 1} è obbligatorio`);
+    if (!gift.price) return setError(`Il prezzo del regalo #${index + 1} è obbligatorio`);
+  }
 
-    const formData = new FormData();
-    formData.append("name", name);
-
-    gifts.forEach((gift, index) => {
-      formData.append(`gifts[${index}][name]`, gift.name);
-      formData.append(`gifts[${index}][price]`, gift.price);
-      formData.append(`gifts[${index}][priority]`, String(gift.priority));
-      
-      if (gift.link) formData.append(`gifts[${index}][link]`, gift.link);
-      if (gift.notes) formData.append(`gifts[${index}][notes]`, gift.notes);
-      if (gift.image) formData.append("images", gift.image); 
-    });
-
-    try {
-      await wishlistService.createWishlist(formData);
-      navigate("/wishlists/me");
-    } catch (err: any) {
-      setError(err.message);
-    }
+  const wishlistData = {
+    name,
+    gifts: gifts.map((gift) => ({
+      name: gift.name,
+      price: gift.price,
+      priority: gift.priority,
+      link: gift.link,
+      notes: gift.notes,
+      image: gift.image
+    }))
   };
+
+  try {
+    await wishlistService.createWishlist(wishlistData);
+    navigate("/wishlists/me");
+  } catch (err: any) {
+    setError(err.message);
+  }
+};
 
   return (
     <div className="max-w-4xl mx-auto p-6">
