@@ -10,8 +10,9 @@
 
 interface User {
     email: string,
-    id: string
-    password?: string
+    id: string,
+    password?: string,
+    name? : string
 }
 type Priority  = 1 | 2 | 3 | 4 | 5;
 
@@ -20,7 +21,7 @@ interface Gift {
     image?: string,
     link?: string,
     price: number,
-    priority: Priority
+    priority: Priority,
     notes?: string
 };
 
