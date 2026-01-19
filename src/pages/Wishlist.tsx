@@ -1,16 +1,27 @@
+import { GiftCard } from "../components/GiftCard";
+import { useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import { wishlistService } from "../services/wishlistService";
 import { useAuth } from "../contexts/AuthContext";
-import { SquarePen, Trash2, Heart, Gift } from "lucide-react";
+import { wishlistService } from "../services/wishlistService";
+import WishlistHeader from "../components/WishlistHeader";
+import { Plus } from "lucide-react";
 
 export default function Wishlist() {
     const { token } = useParams<{ token: string }>();
-    const { user } = useAuth(); // Recuperiamo l'utente loggato
+    const { user } = useAuth();
     const navigate = useNavigate();
     
     const [wishlist, setWishlist] = useState<any>(null);
+    const [editData, setEditData] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [isEditMode, setIsEditMode] = useState(false);
+    const [copied, setCopied] = useState(false);
+
+    console.log("DEBUG AUTH:", {
+    userId: user?.id,
+    ownerId: wishlist?.owner_id,
+    areEqual: String(user?.id) === String(wishlist?.owner_id)
+});
 
     useEffect(() => {
         const fetchWishlist = async () => {
@@ -18,6 +29,7 @@ export default function Wishlist() {
                 if (token) {
                     const data = await wishlistService.getPublicWishlist(token);
                     setWishlist(data);
+                    setEditData(JSON.parse(JSON.stringify(data)));
                 }
             } catch (err) {
                 console.error(err);
@@ -28,60 +40,137 @@ export default function Wishlist() {
         fetchWishlist();
     }, [token]);
 
-    if (loading) return <div className="text-center p-10">Caricamento... ❄️</div>;
-    if (!wishlist) return <div className="text-center p-10">Wishlist non trovata.</div>;
+    const handleCopyLink = () => {
+        navigator.clipboard.writeText(window.location.href);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
 
-  
-    const isOwner = user && Number(user.id) === Number(wishlist.owner_id);
+    const handleDelete = async () => {
+        if (!window.confirm("Sei sicuro? Questa azione eliminerà l'intera lista.")) return;
+        try {
+            await wishlistService.deleteWishlist(wishlist.id);
+            navigate("/wishlists/me");
+        } catch (err) { alert("Errore durante l'eliminazione"); }
+    };
+
+    const addGift = () => {
+        const newGift = { name: "", price: 0, priority: 3, notes: "", link: "", image: null };
+        setEditData({ ...editData, gifts: [...editData.gifts, newGift] });
+    };
+
+    const updateGift = (index: number, field: string, value: any) => {
+        const newGifts = [...editData.gifts];
+        newGifts[index] = { ...newGifts[index], [field]: value };
+        setEditData({ ...editData, gifts: newGifts });
+    };
+
+    const removeGift = (index: number) => {
+        const newGifts = editData.gifts.filter((_: any, i: number) => i !== index);
+        setEditData({ ...editData, gifts: newGifts });
+    };
+
+    const handleSaveChanges = async () => {
+    try {
+        const formData = new FormData();
+        
+        // 1. Aggiungiamo il nome della wishlist
+        formData.append("name", editData.name);
+
+        // 2. Prepariamo i regali pulendo i path delle immagini esistenti
+        const sanitizedGifts = editData.gifts.map((g: any) => {
+            let imagePath = g.image_url || g.image;
+
+            // Se l'immagine è una stringa (URL), rimuoviamo il dominio 
+            // per salvare nel DB solo "uploads/nomefile.jpg"
+            if (typeof imagePath === "string" && imagePath.includes('/uploads/')) {
+                imagePath = imagePath.split('/uploads/')[1];
+                imagePath = `uploads/${imagePath}`;
+            }
+
+            return {
+                id: g.id || null,
+                name: g.name,
+                price: g.price,
+                priority: g.priority,
+                link: g.link,
+                notes: g.notes,
+                image_url: typeof imagePath === "string" ? imagePath : null
+            };
+        });
+
+        // Aggiungiamo la stringa JSON dei regali
+        formData.append("gifts", JSON.stringify(sanitizedGifts));
+
+        // 3. Aggiungiamo i FILE REALI (Blob/File) se presenti
+        editData.gifts.forEach((gift: any, index: number) => {
+            if (gift.image instanceof File) {
+                formData.append(`gift_image_${index}`, gift.image);
+            }
+        });
+
+        // 4. Invio al service (che ora riceve il formData)
+        await wishlistService.updateWishlist(wishlist.id, formData);
+        
+        // 5. Refresh dei dati per allineare lo stato locale con il DB
+        const updatedWishlist = await wishlistService.getPublicWishlist(token!);
+        setWishlist(updatedWishlist);
+        setEditData(JSON.parse(JSON.stringify(updatedWishlist)));
+        setIsEditMode(false);
+        
+        alert("Lista aggiornata con successo! 🎁");
+    } catch (err) {
+        console.error("Errore salvataggio:", err);
+        alert("Si è verificato un errore durante il salvataggio.");
+    }
+};
+
+    if (loading) return <div className="text-center p-20 animate-pulse text-primary font-bold">Caricamento... ❄️</div>;
+    if (!wishlist) return <div className="text-center p-20 opacity-60">Non trovata.</div>;
+
+    const isOwner = user && wishlist && String(user.id) === String(wishlist.owner_id);
+    const displayGifts = isEditMode ? editData.gifts : wishlist.gifts;
 
     return (
-        <div className="max-w-4xl mx-auto p-4">
-            <div className="flex justify-between items-center mb-8 border-b-2 border-primary pb-4">
-                <h1 className="text-4xl font-bold text-primary">{wishlist.name}</h1>
-                
-                <div className="flex gap-2">
-                    {isOwner ? (
-                        <>
-                            {/* Se è il proprietario, mostra Edit e Delete */}
-                            <button 
-                                onClick={() => navigate(`/wishlists/edit/${wishlist.id}`)}
-                                className="btn-santa flex items-center gap-2"
-                            >
-                                <SquarePen size={20} /> Modifica
-                            </button>
-                            <button 
-                                className="p-2 text-red-500 hover:bg-red-50 rounded-xl"
-                                onClick={() => {/* logica delete */}}
-                            >
-                                <Trash2 size={24} />
-                            </button>
-                        </>
-                    ) : (
-                        /* Se è un visitatore, mostra il tasto "Aggiungi ai Preferiti" */
-                        <button className="flex items-center gap-2 bg-secondary text-white px-4 py-2 rounded-xl hover:opacity-90">
-                            <Heart size={20} /> Salva nei Preferiti
-                        </button>
-                    )}
-                </div>
-            </div>
+        <div className="max-w-5xl mx-auto p-4 md:p-8">
+            {/* --- HEADER --- */}
+            <WishlistHeader
+            wishlist={wishlist}
+            editData={editData}
+            isEditMode={isEditMode}
+            isOwner={isOwner}
+            copied={copied}
+            setEditData={setEditData}
+            setIsEditMode={setIsEditMode}
+            handleSaveChanges={handleSaveChanges}
+            handleCopyLink={handleCopyLink}
+            handleDelete={handleDelete}
+        />
 
-            {/* Lista dei Regali */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {wishlist.gifts.map((gift: any) => (
-                    <div key={gift.id} className="bg-white rounded-2xl p-4 shadow-lg border border-gray-100 flex gap-4">
-                        {gift.image && (
-                            <img src={gift.image} alt={gift.name} className="w-24 h-24 object-cover rounded-xl" />
-                        )}
-                        <div className="flex-1">
-                            <h3 className="font-bold text-xl">{gift.name}</h3>
-                            <p className="text-secondary font-semibold">{gift.price} €</p>
-                            {gift.link && (
-                                <a href={gift.link} target="_blank" className="text-xs text-blue-500 underline">Link al regalo</a>
-                            )}
-                        </div>
-                    </div>
+            {/* --- LISTA --- */}
+            <div className="grid grid-cols-1 mb-10">
+                {displayGifts.map((gift: any, index: number) => (
+                    <GiftCard
+                        key={gift.id || index}
+                        gift={gift}
+                        index={index}
+                        isEditMode={isEditMode}
+                        isOwner={isOwner}
+                        onUpdate={updateGift}
+                        onRemove={removeGift}
+                    />
                 ))}
             </div>
+
+            {/* --- AZIONI IN FONDO --- */}
+            {isEditMode && (
+                <button 
+                    onClick={addGift}
+                    className="w-full p-8 rounded-4xl border-2 border-dashed border-primary/30 text-primary/60 hover:text-primary hover:border-primary hover:bg-primary/5 transition-all flex items-center justify-center gap-3 font-bold"
+                >
+                    <Plus size={24} /> Aggiungi un altro desiderio alla lista
+                </button>
+            )}
         </div>
     );
 }
