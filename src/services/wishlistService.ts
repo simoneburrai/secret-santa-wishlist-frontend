@@ -22,9 +22,8 @@ export const wishlistService = {
     },
 
 
-    createWishlist: async (formData: FormData) => { // Cambiato in FormData
+    createWishlist: async (formData: FormData) => { 
         try {
-            // apiClient userà automaticamente 'multipart/form-data'
             const { data } = await apiClient.post("/wishlists", formData);
             return data;
         } catch (error) {
@@ -43,9 +42,10 @@ export const wishlistService = {
     },
 
 
-    updateWishlist: async (id: number, wishlistData: { name: string; gifts: any[] }) => {
+    updateWishlist: async (id: number, formData: FormData) => {
         try {
-            const { data } = await apiClient.put(`/wishlists/${id}`, wishlistData);
+            // Ora Axios vedrà il formData e imposterà l'header corretto da solo
+            const { data } = await apiClient.put(`/wishlists/${id}`, formData);
             return data;
         } catch (error) {
             handleApiError(error);
