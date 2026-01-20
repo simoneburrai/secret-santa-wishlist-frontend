@@ -1,6 +1,7 @@
 import { Gift, SquarePen, Trash2, ExternalLink, Link as LinkIcon, FileText, X} from "lucide-react";
 import { useRef, useState } from "react";
 import { giftService } from "../services/giftService";
+import { ReserveGiftModal } from "./ReserveGiftModal";
 
 interface GiftCardProps {
   gift: any;
@@ -14,17 +15,20 @@ interface GiftCardProps {
 export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove }: GiftCardProps) => {
 
     const [isOpenReserveMode, setIsOpenReserveMode] = useState(false);  
-    const noteRef = useRef<HTMLInputElement>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleReserve = async (id: number) => {
-        const reserveMessage = noteRef.current?.value || "";
-        
+   const handleReserveConfirm = async (message: string) => {
+        setIsSubmitting(true);
         try {
-            await giftService.reserve(id, reserveMessage);
+            await giftService.reserve(gift.id, message);
+            // Aggiorna lo stato locale per nascondere il bottone e mostrare il blocco rosso
+            onUpdate(index, "is_reserved", true);
+            onUpdate(index, "reserve_message", message);
             setIsOpenReserveMode(false);
-            alert("Regalo prenotato con successo!");
         } catch (error: any) {
             alert(error.message);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -147,27 +151,36 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
               </a>
             )}
             {gift.isReserved && (
-                <div className="mt-4 p-4 rounded-3xl bg-red-500/10 border-2 border-red-500/20 backdrop-blur-sm animate-in fade-in zoom-in duration-300">
-                    <div className="flex items-center justify-center gap-2 mb-3 text-red-500">
-                    <div className="p-2 bg-red-500/20 rounded-full">
-                        <X size={16} strokeWidth={3} />
-                    </div>
-                    <span className="text-sm font-black uppercase tracking-tighter">
-                        Regalo Già Prenotato
-                    </span>
-                    </div>
-                    
-                    {gift.reserveMessage && (
-                    <div className="relative pt-3 border-t border-red-500/10">
-                        <h4 className="text-[10px] uppercase font-black opacity-40 mb-1 text-center">
-                        Messaggio del Babbo Natale
-                        </h4>
-                        <p className="text-sm italic text-red-600 dark:text-red-400 text-center leading-relaxed">
-                        "{gift.reserveMessage}"
-                        </p>
-                    </div>
-                    )}
-                </div>
+              <div className="mt-4 overflow-hidden rounded-3xl border border-red-500/30 bg-gradient-to-br from-red-500/10 to-transparent backdrop-blur-md">
+                  <div className="flex items-center gap-3 p-4 bg-red-500/5">
+                      {/* Icona minimalista */}
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-red-500/20 text-red-500">
+                          <Gift size={20} className="opacity-80" />
+                      </div>
+                      
+                      <div className="flex flex-col">
+                          <span className="text-[10px] font-black uppercase tracking-widest text-red-500/60">
+                              Stato Lista
+                          </span>
+                          <span className="text-sm font-bold text-red-500">
+                              Regalo già scelto
+                          </span>
+                      </div>
+              </div>
+
+                  {gift.reserveMessage && (
+                      <div className="px-5 pb-5 pt-2">
+                          <div className="relative rounded-2xl bg-black/20 p-4 border border-white/5">
+                              {/* Virgolette decorative */}
+                              <span className="absolute -top-2 -left-1 text-3xl font-serif text-red-500/20">"</span>
+                              <p className="text-sm italic text-red-200/70 leading-relaxed relative z-10">
+                                  {gift.reserveMessage}
+                              </p>
+                              <span className="absolute -bottom-5 -right-1 text-3xl font-serif text-red-500/20">"</span>
+                          </div>
+                      </div>
+                  )}
+              </div>
 )}
             {!isOwner && !gift.isReserved && (
               <button onClick={()=>setIsOpenReserveMode(true)} className="flex-1 bg-secondary text-white py-3 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity">
@@ -177,28 +190,6 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
           </div>
         )}
       </div>
-     {isOpenReserveMode && (
-            <div className="flex flex-col gap-2 p-4 bg-white/10 rounded-xl mt-4">
-                <h3 className="font-bold">Aggiungi una nota</h3>
-                <input 
-                    ref={noteRef} // Collega il ref qui
-                    type="text" 
-                    placeholder="Babbo Natale è passato..." 
-                    className="p-2 rounded bg-white/5 border border-primary/20 outline-none"
-                    // NON usare value={} qui se usi i ref
-                />
-                <div className="flex gap-2">
-                    <button onClick={() => setIsOpenReserveMode(false)} className="text-xs opacity-50">Annulla</button>
-                    <button 
-                        onClick={() => handleReserve(gift.id)} 
-                        className="bg-secondary px-4 py-1 rounded text-white font-bold"
-                    >
-                        Riserva
-                    </button>
-                </div>
-            </div>
-        )}
-     
 
       {/* TASTO ELIMINA REGALO */}
       {isEditMode && (
@@ -210,6 +201,14 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
           <Trash2 size={16} />
         </button>
       )}
+
+      <ReserveGiftModal
+                isOpen={isOpenReserveMode}
+                onClose={() => setIsOpenReserveMode(false)}
+                onConfirm={handleReserveConfirm}
+                giftName={gift.name}
+                isSubmitting={isSubmitting}
+            />
     </div>
   );
 };
