@@ -6,6 +6,8 @@
     is_published: boolean;
     created_at?: string;
     gifts?: Gift[]; 
+    is_favorite?: boolean,
+    owner_name?: string
 }
 
 interface User {
