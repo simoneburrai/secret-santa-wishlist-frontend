@@ -4,15 +4,17 @@ import type { Wishlist } from "../types/wishlists";
 import { wishlistService } from "../services/wishlistService";
 import {useNavigate } from "react-router-dom";
 import WishlistCard from "../components/WishlistCard";
+import { useLoading } from "../contexts/LoadingContext";
 
 export default function MyWishlists(): JSX.Element {
     const [myWishlists, setMyWishlists] = useState<Wishlist[]>([]);
     const [favorites, setFavorites] = useState<Wishlist[]>([]);
-    const [loading, setLoading] = useState(true);
+    const { setIsLoading } = useLoading();
     const navigate = useNavigate();
 
     useEffect(() => {
         const loadData = async () => {
+            setIsLoading(true, "Caricamento Wishlist in corso");
             try {
                 const data = await wishlistService.getMyWishlists();
                 setMyWishlists(data.wishlists);
@@ -20,7 +22,7 @@ export default function MyWishlists(): JSX.Element {
             } catch (error) {
                 console.error("Errore nel caricamento delle liste:", error);
             } finally {
-                setLoading(false);
+                setIsLoading(false);
             }
         };
         loadData();
@@ -28,15 +30,16 @@ export default function MyWishlists(): JSX.Element {
 
     const handleDelete = async (id: number) => {
         if (!confirm("Sei sicuro di voler eliminare questa wishlist?")) return;
+        setIsLoading(true, "Rimozione in corso")
         try {
             await wishlistService.deleteWishlist(id);
             setMyWishlists(prev => prev.filter(w => w.id !== id));
         } catch (error) {
             alert("Errore durante l'eliminazione");
+        }finally{
+            setIsLoading(false);
         }
     };
-
-    if (loading) return <div className="p-10 text-center text-primary font-bold">Caricamento regali... ❄️</div>;
 
     return (
         <div className="flex flex-col lg:flex-row flex-1 gap-6 p-4">

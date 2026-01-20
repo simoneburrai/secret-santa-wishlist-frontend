@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/AuthContext";
 import { wishlistService } from "../services/wishlistService";
 import WishlistHeader from "../components/WishlistHeader";
 import { Plus } from "lucide-react";
+import { useLoading } from "../contexts/LoadingContext";
 
 export default function Wishlist() {
     const { token } = useParams<{ token: string }>();
@@ -13,7 +14,7 @@ export default function Wishlist() {
     
     const [wishlist, setWishlist] = useState<any>(null);
     const [editData, setEditData] = useState<any>(null);
-    const [loading, setLoading] = useState(true);
+    const  {setIsLoading} = useLoading();
     const [isEditMode, setIsEditMode] = useState(false);
     const [copied, setCopied] = useState(false);
 
@@ -26,6 +27,7 @@ export default function Wishlist() {
     useEffect(() => {
         const fetchWishlist = async () => {
             try {
+                setIsLoading(true, "Caricamento Wishlist in Corso");
                 if (token) {
                     const data = await wishlistService.getPublicWishlist(token);
                     setWishlist(data);
@@ -34,7 +36,7 @@ export default function Wishlist() {
             } catch (err) {
                 console.error(err);
             } finally {
-                setLoading(false);
+                setIsLoading(false);
             }
         };
         fetchWishlist();
@@ -49,6 +51,7 @@ export default function Wishlist() {
     const handleDelete = async () => {
         if (!window.confirm("Sei sicuro? Questa azione eliminerà l'intera lista.")) return;
         try {
+
             await wishlistService.deleteWishlist(wishlist.id);
             navigate("/wishlists/me");
         } catch (err) { alert("Errore durante l'eliminazione"); }
@@ -72,6 +75,7 @@ export default function Wishlist() {
 
     const handleSaveChanges = async () => {
     try {
+        setIsLoading(true, "Aggiornamento Wishlist in Corso");
         const formData = new FormData();
         
         // 1. Aggiungiamo il nome della wishlist
@@ -122,10 +126,11 @@ export default function Wishlist() {
     } catch (err) {
         console.error("Errore salvataggio:", err);
         alert("Si è verificato un errore durante il salvataggio.");
+    }finally {
+        setIsLoading(false);
     }
 };
 
-    if (loading) return <div className="text-center p-20 animate-pulse text-primary font-bold">Caricamento... ❄️</div>;
     if (!wishlist) return <div className="text-center p-20 opacity-60">Non trovata.</div>;
 
     const isOwner = user && wishlist && String(user.id) === String(wishlist.owner_id);

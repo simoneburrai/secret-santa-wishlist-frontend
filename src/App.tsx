@@ -10,10 +10,12 @@ import Wishlist from "./pages/Wishlist";
 import Default from "./components/Default";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { LoadingProvider } from "./contexts/LoadingContext";
 
 function App() {
 
   return <ThemeProvider>
+        <LoadingProvider>
           <AuthProvider>
             <BrowserRouter>
               <Routes>
@@ -35,6 +37,7 @@ function App() {
               </Routes>
             </BrowserRouter>
           </AuthProvider>
+          </LoadingProvider>
   </ThemeProvider>
 }
 

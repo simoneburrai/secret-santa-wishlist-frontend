@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { z } from "zod";
 import { useAuth } from "../contexts/AuthContext";
+import { useLoading } from "../contexts/LoadingContext";
 
 const loginSchema = z.object({
   email: z
@@ -18,6 +19,7 @@ const loginSchema = z.object({
 export default function Login(): JSX.Element {
   const { login } = useAuth();
   const navigate = useNavigate(); // 2. Inizializza la funzione di navigazione
+  const {setIsLoading} = useLoading();
 
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [dataError, setDataError] = useState({ email: "", password: "" });
@@ -43,6 +45,7 @@ export default function Login(): JSX.Element {
 
     if (validate()) {
       try {
+        setIsLoading(true, "Login In Corso");
         await login(formData);
         
         // 3. Se arriviamo qui, il login è riuscito!
@@ -55,6 +58,8 @@ export default function Login(): JSX.Element {
         } else {
           setError("Si è verificato un errore imprevisto");
         }
+      }finally {
+        setIsLoading(false);
       }
     }
   };

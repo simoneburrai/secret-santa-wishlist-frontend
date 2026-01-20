@@ -1,10 +1,12 @@
 import { useState, type JSX } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext";
+import { useLoading } from "../contexts/LoadingContext";
 
 export default function Register(): JSX.Element {
   const { register } = useAuth();
   const navigate = useNavigate();
+  const {setIsLoading} = useLoading()
   
   // Stato locale per gestire gli input
   const [formData, setFormData] = useState({
@@ -24,6 +26,7 @@ export default function Register(): JSX.Element {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true, "Registazione in corso");
 
     try {
       // Chiamata alla funzione register del context
@@ -32,6 +35,8 @@ export default function Register(): JSX.Element {
       navigate("/wishlists/create");
     } catch (err: any) {
       setError(err.message || "Errore durante la registrazione");
+    }finally{
+      setIsLoading(false);
     }
   };
 

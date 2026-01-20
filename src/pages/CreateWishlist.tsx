@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Plus, Trash2, Gift, Save, Image as ImageIcon, FileText } from "lucide-react";
 import { wishlistService } from "../services/wishlistService";
+import { useLoading } from "../contexts/LoadingContext";
 
 export default function CreateWishlist() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ export default function CreateWishlist() {
     { name: "", price: "", priority: 3, link: "", notes: "", image: null as File | null }
   ]);
   const [error, setError] = useState("");
+  const { setIsLoading } = useLoading();
 
   const addGiftField = () => {
     setGifts([...gifts, { name: "", price: "", priority: 3, link: "", notes: "", image: null }]);
@@ -46,10 +48,13 @@ export default function CreateWishlist() {
     });
 
     try {
+        setIsLoading(true, "Salvataggio in corso...")
         await wishlistService.createWishlist(formData);
         navigate("/wishlists/me");
     } catch (err: any) {
         setError(err.message);
+    }finally{
+      setIsLoading(false);
     }
   };
 

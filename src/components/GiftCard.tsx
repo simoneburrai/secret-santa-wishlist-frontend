@@ -2,6 +2,7 @@ import { Gift, SquarePen, Trash2, ExternalLink, Link as LinkIcon, FileText} from
 import { useState } from "react";
 import { giftService } from "../services/giftService";
 import { ReserveGiftModal } from "./ReserveGiftModal";
+import { useLoading } from "../contexts/LoadingContext";
 
 interface GiftCardProps {
   gift: any;
@@ -16,9 +17,11 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
 
     const [isOpenReserveMode, setIsOpenReserveMode] = useState(false);  
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const {setIsLoading} = useLoading();
 
    const handleReserveConfirm = async (message: string) => {
         setIsSubmitting(true);
+        setIsLoading(true, "Prenotazione regalo in corso");
         try {
             await giftService.reserve(gift.id, message);
             // Aggiorna lo stato locale per nascondere il bottone e mostrare il blocco rosso
@@ -29,6 +32,7 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
             alert(error.message);
         } finally {
             setIsSubmitting(false);
+            setIsLoading(false);
         }
     };
 
