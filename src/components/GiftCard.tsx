@@ -1,5 +1,5 @@
-import { Gift, SquarePen, Trash2, ExternalLink, Link as LinkIcon, FileText, X} from "lucide-react";
-import { useRef, useState } from "react";
+import { Gift, SquarePen, Trash2, ExternalLink, Link as LinkIcon, FileText} from "lucide-react";
+import { useState } from "react";
 import { giftService } from "../services/giftService";
 import { ReserveGiftModal } from "./ReserveGiftModal";
 
@@ -151,7 +151,7 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
               </a>
             )}
             {gift.isReserved && (
-              <div className="mt-4 overflow-hidden rounded-3xl border border-red-500/30 bg-gradient-to-br from-red-500/10 to-transparent backdrop-blur-md">
+              <div className="mt-4 overflow-hidden rounded-3xl border border-red-500/30 bg-linear-to-br from-red-500/10 to-transparent backdrop-blur-md">
                   <div className="flex items-center gap-3 p-4 bg-red-500/5">
                       {/* Icona minimalista */}
                       <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-red-500/20 text-red-500">
