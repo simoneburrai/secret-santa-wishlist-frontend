@@ -1,6 +1,6 @@
 import type { JSX } from "react"
 import { useTheme } from "../contexts/ThemeContext"
-import { Monitor, Moon, Sun } from "lucide-react" // Aggiungiamo qualche icona
+import {Moon, Sun } from "lucide-react" // Aggiungiamo qualche icona
 
 export default function Settings(): JSX.Element {
     const { theme, toggleTheme } = useTheme();

@@ -71,5 +71,14 @@ export const wishlistService = {
         } catch (error) {
             handleApiError(error);
         }
+    },
+
+    removeFavorite: async (wishlistId: number) => {
+        try {
+            const { data } = await apiClient.delete(`/wishlists/favorites/${wishlistId}`);
+            return data;
+        } catch (error) {
+            handleApiError(error);
+        }
     }
 };
