@@ -68,8 +68,9 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
             <SquarePen className="text-white" />
           </div>
         ) : (
-          <PriorityBadge level={gift.priority} />
-  
+          <div className="absolute top-2 left-2 text-[10px] font-black px-2 py-1 rounded-lg uppercase">
+            <PriorityBadge level={gift.priority} />
+          </div>
         )}
       </div>
 
