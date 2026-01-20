@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from "react-router-dom"
-import { Gift, LogIn, LogOut, Search, UserPlus, Settings, User, FilePlus } from "lucide-react"
+import { Gift, LogIn, LogOut, Search, UserPlus, Settings, FilePlus } from "lucide-react"
 import { useState, type JSX } from "react"
 import { useAuth } from "../contexts/AuthContext"
 import SearchModal from "./SearchModal";
