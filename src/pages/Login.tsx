@@ -49,7 +49,6 @@ export default function Login(): JSX.Element {
         await login(formData);
         
         // 3. Se arriviamo qui, il login è riuscito!
-        console.log("Login successo, reindirizzamento...");
         navigate("/"); 
         
       } catch (err: unknown) {

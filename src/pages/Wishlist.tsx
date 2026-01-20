@@ -19,11 +19,7 @@ export default function Wishlist() {
     const [isEditMode, setIsEditMode] = useState(false);
     const [copied, setCopied] = useState(false);
 
-    console.log("DEBUG AUTH:", {
-    userId: user?.id,
-    ownerId: wishlist?.owner_id,
-    areEqual: String(user?.id) === String(wishlist?.owner_id)
-});
+
 
     useEffect(() => {
         const fetchWishlist = async () => {

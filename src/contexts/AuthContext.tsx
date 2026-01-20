@@ -74,7 +74,6 @@ const register = async (credentials: {name: string, email: string, password: str
   };
 
   useEffect(() => {
-  console.log("Stato AUTH cambiato:", isAuthenticated);
 }, [isAuthenticated]);
 
   return (
