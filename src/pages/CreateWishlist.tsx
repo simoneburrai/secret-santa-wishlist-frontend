@@ -153,17 +153,32 @@ export default function CreateWishlist() {
                   />
                 </div>
                 <div className="flex items-center gap-2">
-                  <ImageIcon size={18} className="opacity-40" />
-                  <div className="flex flex-col">
-                    <span className="text-[10px] uppercase font-bold opacity-60">Immagine (Opzionale)</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      className="text-xs opacity-80"
-                      onChange={(e) => handleGiftChange(index, "image", e.target.files ? e.target.files[0] : null)}
-                    />
-                  </div>
-                </div>
+  <ImageIcon size={18} className="opacity-40" />
+  <div className="flex flex-col w-full">
+    <span className="text-[10px] uppercase font-bold opacity-60 mb-1">Immagine (Opzionale)</span>
+    
+    <label className="relative flex items-center justify-center gap-2 p-3 rounded-xl border-2 border-dashed border-primary/20 hover:border-primary hover:bg-primary/5 cursor-pointer transition-all group">
+      <input
+        type="file"
+        accept="image/*"
+        className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+        onChange={(e) => handleGiftChange(index, "image", e.target.files ? e.target.files[0] : null)}
+      />
+      <div className="flex items-center gap-2 text-xs font-medium opacity-80 group-hover:opacity-100">
+        {gift.image ? (
+          <span className="text-secondary font-bold truncate max-w-[150px]">
+            {gift.image.name}
+          </span>
+        ) : (
+          <>
+            <Plus size={14} />
+            <span>Seleziona file</span>
+          </>
+        )}
+      </div>
+    </label>
+  </div>
+</div>
               </div>
             </div>
           ))}
