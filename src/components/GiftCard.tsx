@@ -158,48 +158,47 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
 
         {/* AZIONI (NON EDIT MODE) */}
         {!isEditMode && (
-          <div className="mt-auto flex gap-2">
-            {gift.link && (
-              <a href={gift.link} target="_blank" rel="noreferrer" className="flex-1 btn-santa text-sm flex justify-center items-center gap-2 py-3">
-                <ExternalLink size={16} /> Vedi Prodotto
-              </a>
-            )}
-            {gift.isReserved && (
-              <div className="mt-4 overflow-hidden rounded-3xl border border-red-500/30 bg-linear-to-br from-red-500/10 to-transparent backdrop-blur-md">
-                  <div className="flex items-center gap-3 p-4 bg-red-500/5">
-                      {/* Icona minimalista */}
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-red-500/20 text-red-500">
-                          <Gift size={20} className="opacity-80" />
-                      </div>
-                      
-                      <div className="flex flex-col">
-                          <span className="text-[10px] font-black uppercase tracking-widest text-red-500/60">
-                              Stato Lista
-                          </span>
-                          <span className="text-sm font-bold text-red-500">
-                              Regalo già scelto
-                          </span>
-                      </div>
-              </div>
+          <div className="mt-auto space-y-3">
+            {/* Pulsanti principali: Link e Prenotazione */}
+            <div className="flex flex-col sm:flex-row gap-2">
+              {gift.link && (
+                <a href={gift.link} target="_blank" rel="noreferrer" className="flex-1 btn-santa text-sm flex justify-center items-center gap-2 py-3">
+                  <ExternalLink size={16} /> Vedi Prodotto
+                </a>
+              )}
+              {!isOwner && !gift.is_reserved && (
+                <button onClick={() => setIsOpenReserveMode(true)} className="flex-1 bg-secondary text-white py-3 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity">
+                  Prenota Regalo
+                </button>
+              )}
+            </div>
 
-                  {gift.reserveMessage && (
-                      <div className="px-5 pb-5 pt-2">
-                          <div className="relative rounded-2xl bg-black/20 p-4 border border-white/5">
-                              {/* Virgolette decorative */}
-                              <span className="absolute -top-2 -left-1 text-3xl font-serif text-red-500/20">"</span>
-                              <p className="text-sm italic text-red-200/70 leading-relaxed relative z-10">
-                                  {gift.reserveMessage}
-                              </p>
-                              <span className="absolute -bottom-5 -right-1 text-3xl font-serif text-red-500/20">"</span>
-                          </div>
-                      </div>
+            {/* Stato Prenotazione: appare solo se riservato */}
+            {gift.is_reserved && (
+              <div className="overflow-hidden rounded-2xl border border-red-500/20 bg-red-500/5 backdrop-blur-sm">
+                <div className="flex items-center gap-3 p-3">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-500/20 text-red-500">
+                    <Gift size={20} />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-red-500/60 leading-none mb-1">
+                      Stato Lista
+                    </p>
+                    <p className="text-sm font-bold text-red-500">
+                      Regalo già scelto
+                    </p>
+                  </div>
+                  
+                  {/* Note di chi ha prenotato: ora più pulite senza virgolette giganti */}
+                  {gift.reserve_message && (
+                    <div className="max-w-[50%] bg-black/20 px-3 py-2 rounded-lg border border-white/5">
+                      <p className="text-[11px] italic text-red-200/80 leading-tight">
+                        {gift.reserve_message}
+                      </p>
+                    </div>
                   )}
+                </div>
               </div>
-)}
-            {!isOwner && !gift.isReserved && (
-              <button onClick={()=>setIsOpenReserveMode(true)} className="flex-1 bg-secondary text-white py-3 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity">
-                Prenota Regalo
-              </button>
             )}
           </div>
         )}
