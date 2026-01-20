@@ -166,7 +166,7 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
                   <ExternalLink size={16} /> Vedi Prodotto
                 </a>
               )}
-              {!isOwner && !gift.is_reserved && (
+              {!isOwner && !gift.isReserved && (
                 <button onClick={() => setIsOpenReserveMode(true)} className="flex-1 bg-secondary text-white py-3 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity">
                   Prenota Regalo
                 </button>
@@ -174,7 +174,7 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
             </div>
 
             {/* Stato Prenotazione: appare solo se riservato */}
-            {gift.is_reserved && (
+            {gift.isReserved && (
               <div className="overflow-hidden rounded-2xl border border-red-500/20 bg-red-500/5 backdrop-blur-sm">
                 <div className="flex items-center gap-3 p-3">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-red-500/20 text-red-500">
@@ -189,11 +189,11 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
                     </p>
                   </div>
                   
-                  {/* Note di chi ha prenotato: ora più pulite senza virgolette giganti */}
-                  {gift.reserve_message && (
+                  {/* Note di chi ha prenotato */}
+                  {gift.reserveMessage && (
                     <div className="max-w-[50%] bg-black/20 px-3 py-2 rounded-lg border border-white/5">
                       <p className="text-[11px] italic text-red-200/80 leading-tight">
-                        {gift.reserve_message}
+                        {gift.reserveMessage}
                       </p>
                     </div>
                   )}
