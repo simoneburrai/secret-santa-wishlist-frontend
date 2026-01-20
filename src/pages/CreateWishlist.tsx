@@ -166,7 +166,7 @@ export default function CreateWishlist() {
       />
       <div className="flex items-center gap-2 text-xs font-medium opacity-80 group-hover:opacity-100">
         {gift.image ? (
-          <span className="text-secondary font-bold truncate max-w-[150px]">
+          <span className="text-secondary font-bold truncate max-w-37.5">
             {gift.image.name}
           </span>
         ) : (
