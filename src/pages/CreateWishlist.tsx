@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Plus, Trash2, Gift, Save, Image as ImageIcon, FileText } from "lucide-react";
 import { wishlistService } from "../services/wishlistService";
 import { useLoading } from "../contexts/LoadingContext";
+import { PRIORITY_LEVELS } from "../utils/priorityConstants";
 
 export default function CreateWishlist() {
   const navigate = useNavigate();
@@ -131,15 +132,15 @@ export default function CreateWishlist() {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] font-bold uppercase opacity-60">Priorità *</label>
+                  <label className="text-[10px] font-bold uppercase opacity-60 tracking-wider">Priorità *</label>
                   <select
-                    className="w-full p-2 border-b-2 border-primary/10 focus:border-secondary outline-none bg-transparent font-medium"
+                    className="w-full p-2 border-b-2 border-primary/10 focus:border-secondary outline-none bg-transparent font-medium cursor-pointer transition-colors"
                     value={gift.priority}
                     onChange={(e) => handleGiftChange(index, "priority", Number(e.target.value))}
                   >
-                    {[1, 2, 3, 4, 5].map(n => (
-                      <option key={n} value={n} className="bg-white dark:bg-gray-800">
-                        Priorità {n}
+                    {Object.entries(PRIORITY_LEVELS).map(([value, { label }]) => (
+                      <option key={value} value={value} className="bg-white text-gray-900">
+                        {label}
                       </option>
                     ))}
                   </select>

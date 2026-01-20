@@ -3,6 +3,8 @@ import { useState } from "react";
 import { giftService } from "../services/giftService";
 import { ReserveGiftModal } from "./ReserveGiftModal";
 import { useLoading } from "../contexts/LoadingContext";
+import PriorityBadge from "./PriorityBadge";
+import { PRIORITY_LEVELS } from "../utils/priorityConstants";
 
 interface GiftCardProps {
   gift: any;
@@ -67,7 +69,7 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
           </div>
         ) : (
           <div className="absolute top-2 left-2 bg-primary text-white text-[10px] font-black px-2 py-1 rounded-lg uppercase">
-            Priorità {gift.priority}
+            <PriorityBadge level={gift.priority} />
           </div>
         )}
       </div>
@@ -99,24 +101,32 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
 
               {/* Priorità e Link */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {/* Sezione Priorità */}
                 <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-current/5">
-                    <span className="text-[10px] font-black opacity-50 uppercase">Priorità:</span>
-                    <select 
-                        className="bg-transparent outline-none text-sm font-bold flex-1"
-                        value={gift.priority}
-                        onChange={(e) => onUpdate(index, "priority", Number(e.target.value))}
-                    >
-                        {[1, 2, 3, 4, 5].map(n => <option key={n} value={n} className="text-black">Livello {n}</option>)}
-                    </select>
+                  <span className="text-[10px] font-black opacity-50 uppercase shrink-0">Priorità:</span>
+                  <select
+                    className={`bg-transparent outline-none text-sm font-bold flex-1 cursor-pointer ${PRIORITY_LEVELS[gift.priority]?.color || "text-current"
+                      }`}
+                    value={gift.priority}
+                    onChange={(e) => onUpdate(index, "priority", Number(e.target.value))}
+                  >
+                    {Object.entries(PRIORITY_LEVELS).map(([val, { label }]) => (
+                      <option key={val} value={val} className="text-black bg-white">
+                        {label}
+                      </option>
+                    ))}
+                  </select>
                 </div>
+
+                {/* Sezione Link */}
                 <div className="flex items-center gap-2 bg-white/5 p-2 rounded-xl border border-current/5">
-                    <LinkIcon size={14} className="opacity-50" />
-                    <input 
-                        className="bg-transparent outline-none text-xs flex-1"
-                        placeholder="Link prodotto (Amazon, etc)"
-                        value={gift.link || ""}
-                        onChange={(e) => onUpdate(index, "link", e.target.value)}
-                    />
+                  <LinkIcon size={14} className="opacity-50 shrink-0" />
+                  <input
+                    className="bg-transparent outline-none text-xs flex-1"
+                    placeholder="Link prodotto (Amazon, etc)"
+                    value={gift.link || ""}
+                    onChange={(e) => onUpdate(index, "link", e.target.value)}
+                  />
                 </div>
               </div>
 
