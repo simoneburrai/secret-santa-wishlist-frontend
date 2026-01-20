@@ -12,6 +12,19 @@ export default function MyWishlists(): JSX.Element {
     const { setIsLoading } = useLoading();
     const navigate = useNavigate();
 
+    const handleRemoveFavorite = async (id: number) => {
+    setIsLoading(true, "Rimuovendo dai preferiti...");
+    try {
+        await wishlistService.removeFavorite(id);
+        // Filtra l'array locale per rimuovere la card senza ricaricare la pagina
+        setFavorites(prev => prev.filter(w => w.id !== id));
+    } catch (error) {
+        console.error(error);
+    } finally {
+        setIsLoading(false);
+    }
+};
+
     useEffect(() => {
         const loadData = async () => {
             setIsLoading(true, "Caricamento Wishlist in corso");
@@ -78,7 +91,7 @@ export default function MyWishlists(): JSX.Element {
                          <div className="text-center p-10 opacity-60 italic text-sm">Nessun preferito salvato.</div>
                     ) : (
                         favorites.map((w) => (
-                            <WishlistCard key={w.id} wishlist={w} isOwner={false} />
+                            <WishlistCard onRemoveFavorite={handleRemoveFavorite} key={w.id} wishlist={w} isOwner={false} />
                         ))
                     )}
                 </div>

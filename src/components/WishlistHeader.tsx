@@ -1,11 +1,16 @@
-import { Calendar, Check, Copy, GiftIcon, SquarePen, Trash2, UserIcon, X } from "lucide-react";
+import { Calendar, Check, Copy, GiftIcon, Heart, SquarePen, Trash2, UserIcon, X } from "lucide-react";
+import { useLoading } from "../contexts/LoadingContext";
+import { wishlistService } from "../services/wishlistService";
+import { useAuth } from "../contexts/AuthContext";
 
 interface WishlistHeaderProps {
     wishlist: any;
     editData: any;
     isEditMode: boolean;
     isOwner: boolean;
+    isFavorite: boolean;
     copied: boolean;
+    setIsFavorite: (value: boolean) => void;
     setEditData: (data: any) => void;
     setIsEditMode: (value: boolean) => void;
     handleSaveChanges: () => Promise<void>;
@@ -18,13 +23,47 @@ export default function WishlistHeader({
     editData,
     isEditMode,
     isOwner,
+    isFavorite,
     copied,
     setEditData,
+    setIsFavorite,
     setIsEditMode,
     handleSaveChanges,
     handleCopyLink,
-    handleDelete
+    handleDelete,
 }: WishlistHeaderProps) {
+
+    const {setIsLoading} = useLoading();
+    const {isAuthenticated} = useAuth();
+    
+
+    const handleToggleFavorite = async () => {
+    // Evitiamo che l'owner possa auto-aggiungersi ai favoriti (logica di business)
+    if (isOwner) return;
+
+    const loadingMsg = isFavorite ? "Rimuovendo dai preferiti..." : "Aggiungendo ai preferiti...";
+    setIsLoading(true, loadingMsg);
+
+    try {
+        if (isFavorite) {
+            await wishlistService.removeFavorite(wishlist.id);
+            setIsFavorite(false);
+        } else {
+            await wishlistService.addFavorite(wishlist.id);
+            setIsFavorite(true);
+        }
+    } catch (error) {
+        // L'errore è già gestito dall'interceptor/service, 
+        // ma qui potresti resettare lo stato se la chiamata fallisce
+        console.error("Errore toggle favorite", error);
+    } finally {
+        setIsLoading(false);
+    }
+};
+
+
+
+
     return <header className="relative p-8 rounded-[2.5rem] bg-white/5 border-2 border-primary/20 backdrop-blur-md mb-10 overflow-hidden shadow-2xl">
                 <div className="absolute top-0 right-0 p-10 opacity-5 pointer-events-none">
                     <GiftIcon size={200} className="rotate-12 text-primary" />
@@ -51,6 +90,19 @@ export default function WishlistHeader({
 
                     <div className="flex flex-wrap gap-3">
                         {/* Bottone Condividi sempre visibile */}
+                    {isAuthenticated && <button 
+                        onClick={handleToggleFavorite}
+                        className="group flex items-center gap-2 p-3 rounded-full transition-all active:scale-90"
+                        >
+                            <Heart
+                                size={24} 
+                                className={`transition-colors ${
+                                isFavorite 
+                                ? "fill-red-500 text-red-500" 
+                                : "text-white/40 group-hover:text-red-400"
+                                }`} 
+                                />
+                    </button>}
                         <button 
                             onClick={handleCopyLink}
                             className="flex items-center gap-2 bg-white/10 border border-current/10 px-6 py-3 rounded-2xl hover:bg-white/20 transition-all font-bold backdrop-blur-sm"

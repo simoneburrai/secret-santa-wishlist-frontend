@@ -11,6 +11,7 @@ export default function Wishlist() {
     const { token } = useParams<{ token: string }>();
     const { user } = useAuth();
     const navigate = useNavigate();
+    const [isFavorite, setIsFavorite] = useState(false);
     
     const [wishlist, setWishlist] = useState<any>(null);
     const [editData, setEditData] = useState<any>(null);
@@ -31,6 +32,7 @@ export default function Wishlist() {
                 if (token) {
                     const data = await wishlistService.getPublicWishlist(token);
                     setWishlist(data);
+                    setIsFavorite(data.is_favorite);
                     setEditData(JSON.parse(JSON.stringify(data)));
                 }
             } catch (err) {
@@ -140,6 +142,8 @@ export default function Wishlist() {
         <div className="max-w-5xl mx-auto p-4 md:p-8">
             {/* --- HEADER --- */}
             <WishlistHeader
+            isFavorite={isFavorite}
+            setIsFavorite={setIsFavorite}
             wishlist={wishlist}
             editData={editData}
             isEditMode={isEditMode}
