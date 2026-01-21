@@ -72,49 +72,78 @@ export default function Wishlist() {
     };
 
     const handleSaveChanges = async () => {
-    try {
-        // 1. Validazione Nome Wishlist (quella che hai già intuito)
-        if (!editData.name || editData.name.trim() === "") {
-            alert("Il nome della wishlist è obbligatorio!");
-            return;
+        try {
+            // 1. Validazione Nome Wishlist
+            if (!editData.name || editData.name.trim() === "") {
+                alert("Il nome della wishlist è obbligatorio!");
+                return;
+            }
+
+            // 2. Validazione Regali (Nome e Prezzo > 0 obbligatori)
+            const hasInvalidGifts = editData.gifts.some((g: any) => {
+                const nameInvalid = !g.name || g.name.trim() === "";
+                // Accettiamo numeri o stringhe che rappresentano numeri > 0
+                const priceValue = parseFloat(g.price);
+                const priceInvalid = isNaN(priceValue) || priceValue <= 0;
+                return nameInvalid || priceInvalid;
+            });
+
+            if (hasInvalidGifts) {
+                alert("Ogni regalo deve avere un nome e un prezzo valido (maggiore di 0)!");
+                return;
+            }
+
+            setIsLoading(true, "Salvataggio in corso...");
+            const formData = new FormData();
+            formData.append("name", editData.name);
+
+            // 3. Prepariamo i regali mantenendo isReserved
+            const sanitizedGifts = editData.gifts.map((g: any) => {
+                let imagePath = g.image_url || g.image;
+
+                if (typeof imagePath === "string" && imagePath.includes('/uploads/')) {
+                    imagePath = `uploads/${imagePath.split('/uploads/')[1]}`;
+                }
+
+                return {
+                    id: g.id || null,
+                    name: g.name.trim(),
+                    price: parseFloat(g.price),
+                    priority: g.priority,
+                    link: g.link || "",
+                    notes: g.notes || "",
+                    isReserved: g.isReserved || false, // Usiamo isReserved come confermato
+                    reserveMessage: g.reserveMessage || null,
+                    image_url: typeof imagePath === "string" ? imagePath : null
+                };
+            });
+
+            formData.append("gifts", JSON.stringify(sanitizedGifts));
+
+            // 4. Invio file reali
+            editData.gifts.forEach((gift: any, index: number) => {
+                if (gift.image instanceof File) {
+                    formData.append(`gift_image_${index}`, gift.image);
+                }
+            });
+
+            // Chiamata al servizio
+            await wishlistService.updateWishlist(wishlist.id, formData);
+
+            // Refresh dati
+            const updatedWishlist = await wishlistService.getPublicWishlist(token!);
+            setWishlist(updatedWishlist);
+            setEditData(JSON.parse(JSON.stringify(updatedWishlist)));
+            setIsEditMode(false);
+
+            alert("Lista aggiornata correttamente! 🎁");
+        } catch (err) {
+            console.error("ERRORE SALVATAGGIO:", err);
+            alert("Errore durante il salvataggio. Controlla la console del browser.");
+        } finally {
+            setIsLoading(false);
         }
-
-        // 2. Validazione Regali: controlliamo che ogni regalo abbia almeno un nome
-        const hasInvalidGifts = editData.gifts.some((g: any) => !g.name || g.name.trim() === "");
-        
-        if (hasInvalidGifts) {
-            alert("Tutti i regali inseriti devono avere almeno un nome!");
-            return;
-        }
-
-        setIsLoading(true, "Aggiornamento Wishlist in Corso");
-        const formData = new FormData();
-        formData.append("name", editData.name);
-
-        // 3. Prepariamo i regali (Resto della logica invariata...)
-        const sanitizedGifts = editData.gifts.map((g: any) => {
-            // ... tua logica esistente per le immagini ...
-            return {
-                id: g.id || null,
-                name: g.name.trim(), // Usiamo trim() per sicurezza
-                price: g.price || 0,
-                priority: g.priority || 3,
-                link: g.link || "",
-                notes: g.notes || "",
-                image_url: g.image_url || null
-            };
-        });
-
-        formData.append("gifts", JSON.stringify(sanitizedGifts));
-        // ... invio dei file e chiamata al service ...
-
-    } catch (err) {
-        console.error("Errore salvataggio:", err);
-        alert("Si è verificato un errore durante il salvataggio.");
-    } finally {
-        setIsLoading(false);
-    }
-};
+    };
 
     if (!wishlist) return <div className="text-center p-20 opacity-60">Non trovata.</div>;
 

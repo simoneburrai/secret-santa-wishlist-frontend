@@ -92,12 +92,18 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
                 <div className="flex items-center gap-1">
                   <input
                     type="number"
-                    className="text-xl font-black text-secondary w-24 bg-white/10 border-b-2 border-secondary/30 outline-none p-1 focus:border-secondary"
+                    step="0.01"
+                    className={`text-xl font-black w-24 bg-white/10 border-b-2 outline-none p-1 transition-colors ${!gift.price || parseFloat(gift.price) <= 0
+                        ? 'border-red-500/50 text-red-500 focus:border-red-500'
+                        : 'border-secondary/30 text-secondary focus:border-secondary'
+                      }`}
                     value={gift.price}
                     onChange={(e) => onUpdate(index, "price", e.target.value)}
                     placeholder="0.00"
                   />
-                  <span className="font-bold text-secondary">€</span>
+                  <span className={`font-bold ${(!gift.price || parseFloat(gift.price) <= 0) ? 'text-red-500' : 'text-secondary'}`}>
+                    €
+                  </span>
                 </div>
               </div>
 
