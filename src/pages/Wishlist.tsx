@@ -6,10 +6,12 @@ import { wishlistService } from "../services/wishlistService";
 import WishlistHeader from "../components/WishlistHeader";
 import { Plus } from "lucide-react";
 import { useLoading } from "../contexts/LoadingContext";
+import { useAlert } from "../contexts/AlertContext";
 
 export default function Wishlist() {
     const { token } = useParams<{ token: string }>();
     const { user } = useAuth();
+       const {showAlert} = useAlert();
     const navigate = useNavigate();
     const [isFavorite, setIsFavorite] = useState(false);
     
@@ -18,6 +20,7 @@ export default function Wishlist() {
     const  {setIsLoading} = useLoading();
     const [isEditMode, setIsEditMode] = useState(false);
     const [copied, setCopied] = useState(false);
+
 
 
 
@@ -52,7 +55,7 @@ export default function Wishlist() {
 
             await wishlistService.deleteWishlist(wishlist.id);
             navigate("/wishlists/me");
-        } catch (err) { alert("Errore durante l'eliminazione"); }
+        } catch (err) { showAlert("Errore durante l'eliminazione"); }
     };
 
     const addGift = () => {
@@ -75,7 +78,7 @@ export default function Wishlist() {
         try {
             // 1. Validazione Nome Wishlist
             if (!editData.name || editData.name.trim() === "") {
-                alert("Il nome della wishlist è obbligatorio!");
+                showAlert("Il nome della wishlist è obbligatorio!");
                 return;
             }
 
@@ -89,7 +92,7 @@ export default function Wishlist() {
             });
 
             if (hasInvalidGifts) {
-                alert("Ogni regalo deve avere un nome e un prezzo valido (maggiore di 0)!");
+                showAlert("Ogni regalo deve avere un nome e un prezzo valido (maggiore di 0)!");
                 return;
             }
 
@@ -136,10 +139,10 @@ export default function Wishlist() {
             setEditData(JSON.parse(JSON.stringify(updatedWishlist)));
             setIsEditMode(false);
 
-            alert("Lista aggiornata correttamente! 🎁");
+            showAlert("Lista aggiornata correttamente! 🎁");
         } catch (err) {
             console.error("ERRORE SALVATAGGIO:", err);
-            alert("Errore durante il salvataggio. Controlla la console del browser.");
+            showAlert("Errore durante il salvataggio. Controlla la console del browser.");
         } finally {
             setIsLoading(false);
         }

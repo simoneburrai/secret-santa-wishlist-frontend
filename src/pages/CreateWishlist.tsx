@@ -32,29 +32,51 @@ export default function CreateWishlist() {
     e.preventDefault();
     setError("");
 
+    if (!name || name.trim() === "") {
+      setError("Devi dare un titolo alla tua Wishlist!");
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+   
+    const hasInvalidGifts = gifts.some((gift) => {
+      const nameInvalid = !gift.name || gift.name.trim() === "";
+      const priceValue = parseFloat(gift.price.toString());
+      const priceInvalid = isNaN(priceValue) || priceValue <= 0;
+      return nameInvalid || priceInvalid;
+    });
+
+    if (hasInvalidGifts) {
+      setError("Ogni regalo deve avere almeno un nome e un prezzo maggiore di 0.");
+      return;
+    }
+
     const formData = new FormData();
-    if(name){formData.append("name", name);}else return;
+    formData.append("name", name.trim());
+
     formData.append("gifts", JSON.stringify(gifts.map(gift => ({
-        name: gift.name,
-        price: gift.price,
-        priority: gift.priority,
-        link: gift.link,
-        notes: gift.notes
+      name: gift.name.trim(),
+      price: parseFloat(gift.price.toString()),
+      priority: gift.priority,
+      link: gift.link || "",
+      notes: gift.notes || ""
     }))));
 
     gifts.forEach((gift, index) => {
-        if (gift.image) {
-            formData.append(`gift_image_${index}`, gift.image);
-        }
+      if (gift.image instanceof File) {
+        formData.append(`gift_image_${index}`, gift.image);
+      }
     });
 
+
     try {
-        setIsLoading(true, "Salvataggio in corso...")
-        await wishlistService.createWishlist(formData);
-        navigate("/wishlists/me");
+      setIsLoading(true, "Creazione della lista in corso...");
+      await wishlistService.createWishlist(formData);
+      navigate("/wishlists/me");
     } catch (err: any) {
-        setError(err.message);
-    }finally{
+      console.error("Errore creazione:", err);
+      setError(err.response?.data?.msg || "Si è verificato un errore durante il salvataggio.");
+    } finally {
       setIsLoading(false);
     }
   };

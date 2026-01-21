@@ -5,12 +5,14 @@ import { wishlistService } from "../services/wishlistService";
 import {useNavigate } from "react-router-dom";
 import WishlistCard from "../components/WishlistCard";
 import { useLoading } from "../contexts/LoadingContext";
+import { useAlert } from "../contexts/AlertContext";
 
 export default function MyWishlists(): JSX.Element {
     const [myWishlists, setMyWishlists] = useState<Wishlist[]>([]);
     const [favorites, setFavorites] = useState<Wishlist[]>([]);
     const { setIsLoading } = useLoading();
     const navigate = useNavigate();
+    const {showAlert} = useAlert();
 
     const handleRemoveFavorite = async (id: number) => {
     setIsLoading(true, "Rimuovendo dai preferiti...");
@@ -48,7 +50,7 @@ export default function MyWishlists(): JSX.Element {
             await wishlistService.deleteWishlist(id);
             setMyWishlists(prev => prev.filter(w => w.id !== id));
         } catch (error) {
-            alert("Errore durante l'eliminazione");
+            showAlert("Errore durante l'eliminazione");
         }finally{
             setIsLoading(false);
         }

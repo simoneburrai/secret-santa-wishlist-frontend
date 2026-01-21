@@ -11,33 +11,36 @@ import Default from "./components/Default";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { AuthProvider } from "./contexts/AuthContext";
 import { LoadingProvider } from "./contexts/LoadingContext";
+import { AlertProvider } from "./contexts/AlertContext";
 
 function App() {
 
   return <ThemeProvider>
-        <LoadingProvider>
-          <AuthProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Default/>}>
+    <AlertProvider>
+      <LoadingProvider>
+        <AuthProvider>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Default />}>
 
-                  <Route path="/" element={<Home/>}/>
-                  <Route path="/login" element={<Login/>}/>
-                  <Route path="/register" element={<Register/>}/>
-                  <Route path="/settings" element={<Settings/>}/>
-                  <Route path="/wishlists/view/:token" element={<Wishlist/>}/>
-                  <Route path="/wishlists/me" element={<MyWihslists/>}/>
-                  <Route path="/wishlists/create" element={<CreateWishlist />} />
-                  <Route path="/wishlists/me/:id" element={<Wishlist/>}/>
-                  
-                  <Route path="/*" element={<NotFound/>}/>
+                <Route path="/" element={<Home />} />
+                <Route path="/login" element={<Login />} />
+                <Route path="/register" element={<Register />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/wishlists/view/:token" element={<Wishlist />} />
+                <Route path="/wishlists/me" element={<MyWihslists />} />
+                <Route path="/wishlists/create" element={<CreateWishlist />} />
+                <Route path="/wishlists/me/:id" element={<Wishlist />} />
 
-                </Route>
+                <Route path="/*" element={<NotFound />} />
 
-              </Routes>
-            </BrowserRouter>
-          </AuthProvider>
-          </LoadingProvider>
+              </Route>
+
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
+      </LoadingProvider>
+    </AlertProvider>
   </ThemeProvider>
 }
 

@@ -5,6 +5,7 @@ import { ReserveGiftModal } from "./ReserveGiftModal";
 import { useLoading } from "../contexts/LoadingContext";
 import PriorityBadge from "./PriorityBadge";
 import { PRIORITY_LEVELS } from "../utils/priorityConstants";
+import { useAlert } from "../contexts/AlertContext";
 
 interface GiftCardProps {
   gift: any;
@@ -20,6 +21,7 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
     const [isOpenReserveMode, setIsOpenReserveMode] = useState(false);  
     const [isSubmitting, setIsSubmitting] = useState(false);
     const {setIsLoading} = useLoading();
+    const {showAlert} = useAlert();
 
    const handleReserveConfirm = async (message: string) => {
         setIsSubmitting(true);
@@ -31,7 +33,7 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
             onUpdate(index, "reserve_message", message);
             setIsOpenReserveMode(false);
         } catch (error: any) {
-            alert(error.message);
+            showAlert(error.message);
         } finally {
             setIsSubmitting(false);
             setIsLoading(false);
