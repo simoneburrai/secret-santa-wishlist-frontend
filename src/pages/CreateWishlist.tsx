@@ -33,7 +33,7 @@ export default function CreateWishlist() {
     setError("");
 
     const formData = new FormData();
-    formData.append("name", name);
+    if(name){formData.append("name", name);}else return;
     formData.append("gifts", JSON.stringify(gifts.map(gift => ({
         name: gift.name,
         price: gift.price,

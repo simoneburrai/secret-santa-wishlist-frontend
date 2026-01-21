@@ -77,6 +77,8 @@ export default function Wishlist() {
         const formData = new FormData();
         
         // 1. Aggiungiamo il nome della wishlist
+        if(editData.name){formData.append("name", editData.name);}else return;
+
         formData.append("name", editData.name);
 
         // 2. Prepariamo i regali pulendo i path delle immagini esistenti
