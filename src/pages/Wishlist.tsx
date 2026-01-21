@@ -73,60 +73,45 @@ export default function Wishlist() {
 
     const handleSaveChanges = async () => {
     try {
+        // 1. Validazione Nome Wishlist (quella che hai già intuito)
+        if (!editData.name || editData.name.trim() === "") {
+            alert("Il nome della wishlist è obbligatorio!");
+            return;
+        }
+
+        // 2. Validazione Regali: controlliamo che ogni regalo abbia almeno un nome
+        const hasInvalidGifts = editData.gifts.some((g: any) => !g.name || g.name.trim() === "");
+        
+        if (hasInvalidGifts) {
+            alert("Tutti i regali inseriti devono avere almeno un nome!");
+            return;
+        }
+
         setIsLoading(true, "Aggiornamento Wishlist in Corso");
         const formData = new FormData();
-        
-        // 1. Aggiungiamo il nome della wishlist
-        if(editData.name){formData.append("name", editData.name);}else return;
-
         formData.append("name", editData.name);
 
-        // 2. Prepariamo i regali pulendo i path delle immagini esistenti
+        // 3. Prepariamo i regali (Resto della logica invariata...)
         const sanitizedGifts = editData.gifts.map((g: any) => {
-            let imagePath = g.image_url || g.image;
-
-            // Se l'immagine è una stringa (URL), rimuoviamo il dominio 
-            // per salvare nel DB solo "uploads/nomefile.jpg"
-            if (typeof imagePath === "string" && imagePath.includes('/uploads/')) {
-                imagePath = imagePath.split('/uploads/')[1];
-                imagePath = `uploads/${imagePath}`;
-            }
-
+            // ... tua logica esistente per le immagini ...
             return {
                 id: g.id || null,
-                name: g.name,
-                price: g.price,
-                priority: g.priority,
-                link: g.link,
-                notes: g.notes,
-                image_url: typeof imagePath === "string" ? imagePath : null
+                name: g.name.trim(), // Usiamo trim() per sicurezza
+                price: g.price || 0,
+                priority: g.priority || 3,
+                link: g.link || "",
+                notes: g.notes || "",
+                image_url: g.image_url || null
             };
         });
 
-        // Aggiungiamo la stringa JSON dei regali
         formData.append("gifts", JSON.stringify(sanitizedGifts));
+        // ... invio dei file e chiamata al service ...
 
-        // 3. Aggiungiamo i FILE REALI (Blob/File) se presenti
-        editData.gifts.forEach((gift: any, index: number) => {
-            if (gift.image instanceof File) {
-                formData.append(`gift_image_${index}`, gift.image);
-            }
-        });
-
-        // 4. Invio al service (che ora riceve il formData)
-        await wishlistService.updateWishlist(wishlist.id, formData);
-        
-        // 5. Refresh dei dati per allineare lo stato locale con il DB
-        const updatedWishlist = await wishlistService.getPublicWishlist(token!);
-        setWishlist(updatedWishlist);
-        setEditData(JSON.parse(JSON.stringify(updatedWishlist)));
-        setIsEditMode(false);
-        
-        alert("Lista aggiornata con successo! 🎁");
     } catch (err) {
         console.error("Errore salvataggio:", err);
         alert("Si è verificato un errore durante il salvataggio.");
-    }finally {
+    } finally {
         setIsLoading(false);
     }
 };

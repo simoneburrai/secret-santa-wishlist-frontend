@@ -41,28 +41,27 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
 
 
   return (
-    <div className={`group flex flex-col sm:flex-row gap-6 p-6 rounded-4xl bg-white/5 border transition-all relative ${
-      isEditMode ? 'border-secondary/40 shadow-inner ring-1 ring-secondary/20' : 'border-current/5 hover:border-primary/30 hover:shadow-2xl hover:-translate-y-1'
-    }`}>
-      
+    <div className={`group flex flex-col sm:flex-row gap-6 p-6 rounded-4xl bg-white/5 border transition-all relative ${isEditMode ? 'border-secondary/40 shadow-inner ring-1 ring-secondary/20' : 'border-current/5 hover:border-primary/30 hover:shadow-2xl hover:-translate-y-1'
+      }`}>
+
       {/* SEZIONE IMMAGINE */}
       <div className="w-full sm:w-40 h-40 shrink-0 relative overflow-hidden rounded-2xl bg-current/5 border border-current/10">
         {gift.image ? (
-          <img 
-            src={typeof gift.image === 'string' ? gift.image : URL.createObjectURL(gift.image)} 
-            alt={gift.name} 
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" 
+          <img
+            src={typeof gift.image === 'string' ? gift.image : URL.createObjectURL(gift.image)}
+            alt={gift.name}
+            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center opacity-20">
             <Gift size={48} />
           </div>
         )}
-        
+
         {isEditMode ? (
           <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity cursor-pointer">
-            <input 
-              type="file" className="absolute inset-0 opacity-0 cursor-pointer" 
+            <input
+              type="file" className="absolute inset-0 opacity-0 cursor-pointer"
               onChange={(e) => onUpdate(index, "image", e.target.files ? e.target.files[0] : null)}
             />
             <SquarePen className="text-white" />
@@ -81,21 +80,24 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
             <div className="flex flex-col gap-3">
               {/* Nome e Prezzo */}
               <div className="flex flex-col sm:flex-row gap-2">
-                <input 
-                  className="text-xl font-bold flex-1 bg-white/10 border-b-2 border-secondary/30 outline-none p-1 focus:border-secondary transition-colors"
-                  value={gift.name} 
-                  onChange={(e) => onUpdate(index, "name", e.target.value)} 
-                  placeholder="Cosa desideri?"
+                <input
+                  className={`text-xl font-bold flex-1 bg-white/10 border-b-2 outline-none p-1 transition-colors ${!gift.name || gift.name.trim() === ""
+                    ? 'border-red-500/50 focus:border-red-500'
+                    : 'border-secondary/30 focus:border-secondary'
+                    }`}
+                  value={gift.name}
+                  onChange={(e) => onUpdate(index, "name", e.target.value)}
+                  placeholder="Cosa desideri? (Obbligatorio)"
                 />
                 <div className="flex items-center gap-1">
-                    <input 
-                    type="number" 
+                  <input
+                    type="number"
                     className="text-xl font-black text-secondary w-24 bg-white/10 border-b-2 border-secondary/30 outline-none p-1 focus:border-secondary"
-                    value={gift.price} 
+                    value={gift.price}
                     onChange={(e) => onUpdate(index, "price", e.target.value)}
                     placeholder="0.00"
-                    />
-                    <span className="font-bold text-secondary">€</span>
+                  />
+                  <span className="font-bold text-secondary">€</span>
                 </div>
               </div>
 
@@ -133,11 +135,11 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
               {/* Note */}
               <div className="flex items-start gap-2 bg-white/5 p-2 rounded-xl border border-current/5">
                 <FileText size={14} className="opacity-50 mt-1" />
-                <textarea 
-                    className="bg-transparent outline-none text-sm italic flex-1 resize-none h-16"
-                    placeholder="Aggiungi dettagli, taglia, colore..."
-                    value={gift.notes || ""}
-                    onChange={(e) => onUpdate(index, "notes", e.target.value)}
+                <textarea
+                  className="bg-transparent outline-none text-sm italic flex-1 resize-none h-16"
+                  placeholder="Aggiungi dettagli, taglia, colore..."
+                  value={gift.notes || ""}
+                  onChange={(e) => onUpdate(index, "notes", e.target.value)}
                 />
               </div>
             </div>
@@ -149,7 +151,7 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
               </div>
               {gift.notes && (
                 <p className="text-sm opacity-70 italic bg-current/5 p-3 rounded-2xl border-l-4 border-primary/30">
-                    "{gift.notes}"
+                  "{gift.notes}"
                 </p>
               )}
             </>
@@ -188,7 +190,7 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
                       Regalo già scelto
                     </p>
                   </div>
-                  
+
                   {/* Note di chi ha prenotato */}
                   {gift.reserveMessage && (
                     <div className="max-w-[50%] bg-black/20 px-3 py-2 rounded-lg border border-white/5">
@@ -206,7 +208,7 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
 
       {/* TASTO ELIMINA REGALO */}
       {isEditMode && (
-        <button 
+        <button
           onClick={() => onRemove(index)}
           className="absolute -top-3 -right-3 bg-red-500 text-white p-2 rounded-full shadow-lg hover:scale-110 transition-transform z-20"
           title="Rimuovi regalo"
@@ -216,12 +218,12 @@ export const GiftCard = ({ gift, index, isEditMode, isOwner, onUpdate, onRemove 
       )}
 
       <ReserveGiftModal
-                isOpen={isOpenReserveMode}
-                onClose={() => setIsOpenReserveMode(false)}
-                onConfirm={handleReserveConfirm}
-                giftName={gift.name}
-                isSubmitting={isSubmitting}
-            />
+        isOpen={isOpenReserveMode}
+        onClose={() => setIsOpenReserveMode(false)}
+        onConfirm={handleReserveConfirm}
+        giftName={gift.name}
+        isSubmitting={isSubmitting}
+      />
     </div>
   );
 };
