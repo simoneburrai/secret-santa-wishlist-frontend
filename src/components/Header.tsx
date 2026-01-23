@@ -3,6 +3,7 @@ import { Gift, LogIn, LogOut, Search, UserPlus, Settings, FilePlus } from "lucid
 import { useState, type JSX } from "react"
 import { useAuth } from "../contexts/AuthContext"
 import SearchModal from "./SearchModal";
+import InstallPWA from "./InstallPWA";
  
 export default function Header(): JSX.Element {
     const { isAuthenticated, logout } = useAuth();
@@ -46,6 +47,7 @@ export default function Header(): JSX.Element {
                         <NavLink className="nav-link text-white p-2 hover:bg-white/10 rounded-full transition-colors" to="/settings" title="Settings">
                             <Settings size={20}/>
                         </NavLink>
+                        <InstallPWA />
                     </div>
 
                     {/* 3. AREA ACCOUNT (Estrema Destra) */}
